@@ -1,0 +1,52 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { GlassmorphicCard } from '../../components/ui/GlassmorphicCard';
+import { AuthForm } from '../../components/auth/AuthForm';
+
+export const AuthPage: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-indigo-800 to-purple-900 px-4 py-12">
+      {/* Background effects */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 -left-10 w-72 h-72 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob" />
+        <div className="absolute top-1/3 -right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+      </div>
+
+      {/* Content */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md z-10"
+      >
+        <GlassmorphicCard className="p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Welcome to Wurana</h1>
+            <p className="mt-2 text-gray-600">Connect with skilled artisans</p>
+          </div>
+          
+          {/* Import and use your existing auth form components */}
+          <AuthForm />
+        </GlassmorphicCard>
+
+        {/* Additional info */}
+        <div className="mt-8 text-center text-white/80">
+          <p>By continuing, you agree to our</p>
+          <div className="mt-2 space-x-4">
+            <a href="/terms" className="text-yellow-400 hover:text-yellow-300">Terms of Service</a>
+            <span>&middot;</span>
+            <a href="/privacy" className="text-yellow-400 hover:text-yellow-300">Privacy Policy</a>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};

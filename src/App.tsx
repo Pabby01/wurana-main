@@ -12,6 +12,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { DashboardLayout } from './components/dashboard/DashboardLayout';
 import { DashboardOverview } from './components/dashboard/DashboardOverview';
+import { AuthPage } from './pages/auth/AuthPage';
 
 // Solana wallet adapter imports
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
@@ -82,6 +83,7 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route path="/auth" element={<AuthPage />} />
         </Routes>
         <Footer />
               </div>

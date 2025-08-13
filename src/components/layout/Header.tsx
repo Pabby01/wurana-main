@@ -5,17 +5,16 @@ import { NeonButton } from '../ui/NeonButton';
 import { GlassmorphicCard } from '../ui/GlassmorphicCard';
 import { Input } from '../ui/Input';
 import { useScrollPosition } from '../../hooks/useScrollPosition';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { AuthModal } from '../auth/AuthModal';
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { user, isAuthenticated, logout } = useAuth();
   const { scrollPosition } = useScrollPosition();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,20 +22,12 @@ export const Header: React.FC = () => {
     console.log('Searching for:', searchQuery);
   };
 
-  const handleAuthAction = async () => {
+  const handleAuthAction = () => {
     if (isAuthenticated) {
-      try {
-        await logout();
-      } catch (error) {
-        console.error('Error logging out:', error);
-      }
+      logout();
     } else {
-      setIsAuthModalOpen(true);
+      navigate('/auth');
     }
-  };
-
-  const handleCloseAuthModal = () => {
-    setIsAuthModalOpen(false);
   };
 
   const headerOpacity = Math.min(scrollPosition / 100, 0.95);
@@ -218,7 +209,7 @@ export const Header: React.FC = () => {
                   {!isAuthenticated && (
                     <NeonButton
                       variant="accent"
-                      onClick={() => setIsAuthModalOpen(true)}
+                      onClick={() => navigate('/auth')}
                       className="w-full flex items-center justify-center space-x-2"
                     >
                       <User className="w-4 h-4" />
@@ -232,7 +223,6 @@ export const Header: React.FC = () => {
           </AnimatePresence>
         </div>
       </motion.header>
-      <AuthModal isOpen={isAuthModalOpen} onClose={handleCloseAuthModal} />
     </>
   );
 };
