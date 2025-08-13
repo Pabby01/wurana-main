@@ -34,6 +34,7 @@ export const KYCFlow: React.FC<KYCFlowProps> = ({ onComplete, className }) => {
   });
   const [securityLevel, setSecurityLevel] = useState<'low' | 'medium' | 'high'>('low');
   const [securityScore, setSecurityScore] = useState(25);
+  // const { requestGatewayToken, gatewayStatus } = useGateway();
 
   const updateSecurityLevel = () => {
     let score = 0;

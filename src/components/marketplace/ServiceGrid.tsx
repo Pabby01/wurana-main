@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Grid, List, Star, MapPin, Clock, Bookmark, BookmarkCheck } from 'lucide-react';
-import { Card } from '../ui/Card';
+// import { ToggleGroup, ToggleGroupItem } from '../ui/ToggleGroup'; (temporarily commented until implemented)
 import { NeonButton } from '../ui/NeonButton';
 import { FilterPanel } from '../ui/FilterPanel';
+import { fetchGigs } from '../../services/api';
 import { clsx } from 'clsx';
+import { Card } from '../ui/Card';
 
 interface Service {
   id: string;
@@ -24,128 +27,11 @@ interface Service {
   badges: number;
 }
 
-const mockServices: Service[] = [
-  {
-    id: '1',
-    title: 'Custom Leather Handbags',
-    description: 'Handcrafted leather bags with traditional techniques',
-    price: 0.5,
-    currency: 'SOL',
-    artisan: {
-      name: 'Adunni Okafor',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      rating: 4.9,
-      location: 'Lagos, Nigeria'
-    },
-    image: 'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2',
-    category: 'Fashion',
-    deliveryTime: '3-5 days',
-    badges: 12
-  },
-  {
-    id: '2',
-    title: 'Handcrafted Wooden Furniture',
-    description: 'Handcrafted wooden furniture with traditional techniques',
-    price: 70,
-    currency: 'USDC',
-    artisan: {
-      name: 'Aluko Oluwafemi',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      rating: 4.9,
-      location: 'Ibadan, Nigeria'
-    },
-    image: 'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2',
-    category: 'Woodworking',
-    deliveryTime: '15-25 days',
-    badges: 12
-  },
-  {
-    id: '3',
-    title: 'Custom Leather Handbags',
-    description: 'Handcrafted leather bags with traditional techniques',
-    price: 0.5,
-    currency: 'SOL',
-    artisan: {
-      name: 'Adunni Okafor',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      rating: 4.9,
-      location: 'Lagos, Nigeria'
-    },
-    image: 'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2',
-    category: 'Fashion',
-    deliveryTime: '3-5 days',
-    badges: 12
-  },
-  {
-    id: '1',
-    title: 'Custom Leather Handbags',
-    description: 'Handcrafted leather bags with traditional techniques',
-    price: 0.5,
-    currency: 'SOL',
-    artisan: {
-      name: 'Adunni Okafor',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      rating: 4.9,
-      location: 'Lagos, Nigeria'
-    },
-    image: 'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2',
-    category: 'Fashion',
-    deliveryTime: '3-5 days',
-    badges: 12
-  },
-  {
-    id: '1',
-    title: 'Custom Leather Handbags',
-    description: 'Handcrafted leather bags with traditional techniques',
-    price: 0.5,
-    currency: 'SOL',
-    artisan: {
-      name: 'Adunni Okafor',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      rating: 4.9,
-      location: 'Lagos, Nigeria'
-    },
-    image: 'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2',
-    category: 'Fashion',
-    deliveryTime: '3-5 days',
-    badges: 12
-  },
-  {
-    id: '1',
-    title: 'Custom Leather Handbags',
-    description: 'Handcrafted leather bags with traditional techniques',
-    price: 0.5,
-    currency: 'SOL',
-    artisan: {
-      name: 'Adunni Okafor',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      rating: 4.9,
-      location: 'Lagos, Nigeria'
-    },
-    image: 'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2',
-    category: 'Fashion',
-    deliveryTime: '3-5 days',
-    badges: 12
-  },
-  {
-    id: '1',
-    title: 'Custom Leather Handbags',
-    description: 'Handcrafted leather bags with traditional techniques',
-    price: 0.5,
-    currency: 'SOL',
-    artisan: {
-      name: 'Adunni Okafor',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      rating: 4.9,
-      location: 'Lagos, Nigeria'
-    },
-    image: 'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2',
-    category: 'Fashion',
-    deliveryTime: '3-5 days',
-    badges: 12
-  },
-  // Add more mock services...
-];
+interface Filters {
+  category: string;
+  priceRange: [number, number];
+  location: string;
+}
 
 const filterSections = [
   {
@@ -191,7 +77,31 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({ className }) => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [savedServices, setSavedServices] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState('relevance');
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState<Filters>({
+    category: '',
+    priceRange: [0, 1000],
+    location: ''
+  });
+
+  const [gigs, setGigs] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadGigs = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchGigs();
+        setGigs(response);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load gigs');
+        setLoading(false);
+      }
+    };
+
+    loadGigs();
+  }, []);
 
   const toggleSaveService = (serviceId: string) => {
     const newSaved = new Set(savedServices);
@@ -318,96 +228,95 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({ className }) => {
 
   return (
     <div className={clsx('max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8', className)}>
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Filters Sidebar */}
-        <div className="lg:w-80 flex-shrink-0 mt-7">
-          <FilterPanel
-            sections={filterSections}
-            onFilterChange={handleFilterChange}
-          />
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1">
-          {/* Controls */}
-          <div className="flex items-center justify-between mt-9 mb-6">
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-600">
-                Showing {mockServices.length} services
-              </span>
-              
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                <option value="relevance">Sort by Relevance</option>
-                <option value="price_low">Price: Low to High</option>
-                <option value="price_high">Price: High to Low</option>
-                <option value="rating">Highest Rated</option>
-                <option value="newest">Newest First</option>
-              </select>
+      {loading && <div className="text-center p-4">Loading services...</div>}
+      {error && <div className="text-red-500 p-4 text-center">{error}</div>}
+      {!loading && !error && (
+        <>
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Filters Sidebar */}
+            <div className="lg:w-80 flex-shrink-0 mt-7">
+              <FilterPanel
+                sections={filterSections}
+                onFilterChange={handleFilterChange}
+              />
             </div>
 
-            <div className="flex items-center space-x-2">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setViewMode('grid')}
+            {/* Main Content */}
+            <div className="flex-1">
+              {/* Controls */}
+              <div className="flex items-center justify-between mt-9 mb-6">
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-600">
+                    Showing {gigs.length} services
+                  </span>
+                  
+                  <label htmlFor="sort-select" className="sr-only">
+                    Sort services
+                  </label>
+                  <select
+                    id="sort-select"
+                    aria-label="Sort services"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
+                    <option value="relevance">Sort by Relevance</option>
+                    <option value="price_low">Price: Low to High</option>
+                    <option value="price_high">Price: High to Low</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="newest">Newest First</option>
+                  </select>
+                </div>
+
+                <div className="flex gap-2">
+                  <NeonButton 
+                    size="sm" 
+                    onClick={() => setViewMode('grid')} 
+                    variant={viewMode === 'grid' ? 'accent' : 'secondary'}
+                  >
+                    <Grid size={18} />
+                  </NeonButton>
+                  <NeonButton 
+                    size="sm" 
+                    onClick={() => setViewMode('list')} 
+                    variant={viewMode === 'list' ? 'accent' : 'secondary'}
+                  >
+                    <List size={18} />
+                  </NeonButton>
+                </div>
+              </div>
+
+              {/* Services Grid/List */}
+              <motion.div
+                layout
                 className={clsx(
-                  'p-2 rounded-lg transition-colors',
+                  'gap-6',
                   viewMode === 'grid'
-                    ? 'bg-purple-100 text-purple-600'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
+                    : 'flex flex-col space-y-4'
                 )}
               >
-                <Grid className="w-5 h-5" />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setViewMode('list')}
-                className={clsx(
-                  'p-2 rounded-lg transition-colors',
-                  viewMode === 'list'
-                    ? 'bg-purple-100 text-purple-600'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                )}
-              >
-                <List className="w-5 h-5" />
-              </motion.button>
+                <AnimatePresence>
+                  {gigs.map((service) => (
+                    <ServiceCard
+                      key={service.id}
+                      service={service}
+                      isListView={viewMode === 'list'}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+
+              {/* Load More */}
+              <div className="text-center mt-12">
+                <NeonButton variant="secondary" size="lg">
+                  Load More Services
+                </NeonButton>
+              </div>
             </div>
           </div>
-
-          {/* Services Grid/List */}
-          <motion.div
-            layout
-            className={clsx(
-              'gap-6',
-              viewMode === 'grid'
-                ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
-                : 'flex flex-col space-y-4'
-            )}
-          >
-            <AnimatePresence>
-              {mockServices.map((service) => (
-                <ServiceCard
-                  key={service.id}
-                  service={service}
-                  isListView={viewMode === 'list'}
-                />
-              ))}
-            </AnimatePresence>
-          </motion.div>
-
-          {/* Load More */}
-          <div className="text-center mt-12">
-            <NeonButton variant="secondary" size="lg">
-              Load More Services
-            </NeonButton>
-          </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };
