@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
-import { clsx } from 'clsx';
+import React, { useState } from "react";
+import { motion, HTMLMotionProps } from "framer-motion";
+import { Loader2 } from "lucide-react";
+import { clsx } from "clsx";
 
-interface NeonButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'accent';
-  size?: 'sm' | 'md' | 'lg';
+type NeonButtonProps = HTMLMotionProps<"button"> & {
+  variant?: "primary" | "secondary" | "accent";
+  size?: "sm" | "md" | "lg";
   loading?: boolean;
   glowColor?: string;
   children: React.ReactNode;
-}
+};
 
 export const NeonButton: React.FC<NeonButtonProps> = ({
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   loading = false,
   glowColor,
   disabled,
@@ -23,33 +23,34 @@ export const NeonButton: React.FC<NeonButtonProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const baseClasses = 'relative inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden';
-  
+  const baseClasses =
+    "relative inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden";
+
   const variants = {
     primary: {
-      bg: 'bg-gradient-to-r from-purple-600 to-purple-700',
-      text: 'text-white',
-      glow: glowColor || '#9945FF',
-      border: 'border-purple-500/50'
+      bg: "bg-gradient-to-r from-purple-600 to-purple-700",
+      text: "text-white",
+      glow: glowColor || "#9945FF",
+      border: "border-purple-500/50",
     },
     secondary: {
-      bg: 'bg-gradient-to-r from-indigo-900 to-indigo-800',
-      text: 'text-white',
-      glow: glowColor || '#2E1A47',
-      border: 'border-indigo-500/50'
+      bg: "bg-gradient-to-r from-indigo-900 to-indigo-800",
+      text: "text-white",
+      glow: glowColor || "#2E1A47",
+      border: "border-indigo-500/50",
     },
     accent: {
-      bg: 'bg-gradient-to-r from-yellow-400 to-yellow-500',
-      text: 'text-gray-900',
-      glow: glowColor || '#FFC107',
-      border: 'border-yellow-400/50'
-    }
+      bg: "bg-gradient-to-r from-yellow-400 to-yellow-500",
+      text: "text-gray-900",
+      glow: glowColor || "#FFC107",
+      border: "border-yellow-400/50",
+    },
   };
-  
+
   const sizes = {
-    sm: 'px-4 py-2 text-sm',
-    md: 'px-6 py-3 text-base',
-    lg: 'px-8 py-4 text-lg'
+    sm: "px-4 py-2 text-sm",
+    md: "px-6 py-3 text-base",
+    lg: "px-8 py-4 text-lg",
   };
 
   const currentVariant = variants[variant];
@@ -69,7 +70,7 @@ export const NeonButton: React.FC<NeonButtonProps> = ({
         className
       )}
       style={{
-        boxShadow: isHovered 
+        boxShadow: isHovered
           ? `0 0 30px ${currentVariant.glow}40, 0 0 60px ${currentVariant.glow}20`
           : `0 0 15px ${currentVariant.glow}20`,
       }}
@@ -85,13 +86,13 @@ export const NeonButton: React.FC<NeonButtonProps> = ({
           background: `linear-gradient(45deg, ${currentVariant.glow}20, transparent, ${currentVariant.glow}20)`,
         }}
       />
-      
+
       {/* Loading spinner */}
       {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-      
+
       {/* Button content */}
       <span className="relative z-10">{children}</span>
-      
+
       {/* Click ripple effect */}
       <motion.div
         className="absolute inset-0 rounded-xl"
