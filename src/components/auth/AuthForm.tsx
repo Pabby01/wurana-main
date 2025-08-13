@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Mail, User as UserIcon, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, UserIcon, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useGateway } from '@civic/solana-gateway-react';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
-import { useGateway } from '@civic/solana-gateway-react';
 
-export const AuthForm: React.FC = () => {
+interface AuthFormProps {
+  mode: 'login' | 'signup';
+}
+
+export const AuthForm: React.FC<AuthFormProps> = ({ mode }) => {
   const { login, loginWithGoogle } = useAuth();
   const { requestGatewayToken } = useGateway();
   const [isLoading, setIsLoading] = useState(false);
@@ -18,8 +22,8 @@ export const AuthForm: React.FC = () => {
     e.preventDefault();
     setFormError(null);
 
-    if (!email || !name) {
-      setFormError('Please fill in all fields');
+    if (!email) {
+      setFormError('Please enter your email address');
       return;
     }
 
@@ -28,7 +32,30 @@ export const AuthForm: React.FC = () => {
       return;
     }
 
-    await handleCivicVerification();
+    if (mode === 'signup' && !name) {
+      setFormError('Please enter your name');
+      return;
+    }
+
+    if (mode === 'signup') {
+      await handleCivicVerification();
+    } else {
+      await handleLogin();
+    }
+  };
+
+  const handleLogin = async () => {
+    setIsLoading(true);
+    try {
+      // For login mode, we might not need Civic verification
+      // This depends on your authentication flow
+      await login(email, name || 'User');
+    } catch (error: Error | unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Login failed. Please try again.';
+      setFormError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCivicVerification = async () => {
@@ -42,7 +69,7 @@ export const AuthForm: React.FC = () => {
       }
     } catch (error: Error | unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Please try again.';
-      setFormError(`Civic verification failed: ${errorMessage}`);
+      setFormError(`${mode === 'signup' ? 'Account creation' : 'Login'} failed: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -52,35 +79,50 @@ export const AuthForm: React.FC = () => {
     try {
       await loginWithGoogle();
     } catch {
-      setFormError('Google login failed. Please try again.');
+      setFormError(`Google ${mode === 'signup' ? 'signup' : 'login'} failed. Please try again.`);
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Error Display */}
-      {formError && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-lg"
-        >
-          <AlertCircle className="w-5 h-5 flex-shrink-0" />
-          <p className="text-sm">{formError}</p>
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {formError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-lg"
+          >
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <p className="text-sm">{formError}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input
-          label="Name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          icon={<UserIcon className="w-5 h-5" />}
-          placeholder="Enter your name"
-          disabled={isLoading}
-        />
+        <AnimatePresence>
+          {mode === 'signup' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Input
+                label="Name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                icon={<UserIcon className="w-5 h-5" />}
+                placeholder="Enter your name"
+                disabled={isLoading}
+                required={mode === 'signup'}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <Input
           label="Email"
@@ -90,6 +132,7 @@ export const AuthForm: React.FC = () => {
           icon={<Mail className="w-5 h-5" />}
           placeholder="Enter your email"
           disabled={isLoading}
+          required
         />
 
         <Button
@@ -98,7 +141,7 @@ export const AuthForm: React.FC = () => {
           loading={isLoading}
           disabled={isLoading}
         >
-          Create Account
+          {mode === 'signup' ? 'Create Account' : 'Sign In'}
         </Button>
       </form>
 
@@ -124,7 +167,7 @@ export const AuthForm: React.FC = () => {
           alt="Google"
           className="w-5 h-5 mr-2"
         />
-        Sign up with Google
+        {mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google'}
       </Button>
     </div>
   );
