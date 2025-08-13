@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,7 +17,6 @@ import {
   Calendar,
   Briefcase,
   Tag,
-  Image as ImageIcon,
   Trash2,
   Check,
 } from "lucide-react";
@@ -25,7 +24,7 @@ import { GlassmorphicCard } from "../../components/ui/GlassmorphicCard";
 import { NeonButton } from "../../components/ui/NeonButton";
 import { Input } from "../../components/ui/Input";
 import { useAuth } from "../../contexts/AuthContext";
-import { UserProfile, PortfolioItem, NFTBadge } from "../../types";
+import { PortfolioItem, NFTBadge } from "../../types";
 
 interface ProfileFormData {
   displayName: string;
@@ -505,7 +504,7 @@ export const ProfilePage: React.FC = () => {
                     Skills & Expertise
                   </h3>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {formData.skills.map((skill, index) => (
+                    {formData.skills.map((skill) => (
                       <motion.span
                         key={skill}
                         initial={{ opacity: 0, scale: 0.8 }}

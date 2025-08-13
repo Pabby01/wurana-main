@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   TrendingUp, 
@@ -7,22 +7,18 @@ import {
   MousePointer, 
   ShoppingCart, 
   DollarSign,
-  Users,
-  Calendar,
   BarChart3,
-  LineChart,
-  PieChart,
   Activity
 } from 'lucide-react';
-import { Card } from '../ui/Card';
 import { GlassmorphicCard } from '../ui/GlassmorphicCard';
-import { NeonButton } from '../ui/NeonButton';
 import { Gig, GigAnalytics as GigAnalyticsType } from '../../types/gig';
 
 interface GigAnalyticsProps {
   gig: Gig;
   analytics: GigAnalyticsType[];
 }
+
+type PeriodType = '7d' | '30d' | '90d';
 
 // Mock data for demonstration
 const MOCK_ANALYTICS: GigAnalyticsType[] = [
@@ -51,7 +47,7 @@ const TOP_KEYWORDS = [
 ];
 
 export const GigAnalytics: React.FC<GigAnalyticsProps> = ({ gig }) => {
-  const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d'>('7d');
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodType>('7d');
   const [analytics] = useState<GigAnalyticsType[]>(MOCK_ANALYTICS);
 
   // Calculate metrics based on selected period
@@ -140,10 +136,10 @@ export const GigAnalytics: React.FC<GigAnalyticsProps> = ({ gig }) => {
           <p className="text-white/70">{gig.title}</p>
         </div>
         <div className="flex space-x-2 mt-4 lg:mt-0">
-          {['7d', '30d', '90d'].map((period) => (
+          {(['7d', '30d', '90d'] as const).map((period) => (
             <button
               key={period}
-              onClick={() => setSelectedPeriod(period as any)}
+              onClick={() => setSelectedPeriod(period)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 selectedPeriod === period
                   ? 'bg-purple-500 text-white'
@@ -289,7 +285,7 @@ export const GigAnalytics: React.FC<GigAnalyticsProps> = ({ gig }) => {
           <h3 className="text-lg font-semibold text-white mb-6">Traffic Sources</h3>
           
           <div className="space-y-4">
-            {TRAFFIC_SOURCES.map((source, index) => (
+            {TRAFFIC_SOURCES.map((source) => (
               <div key={source.source} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className={`w-3 h-3 rounded-full mr-3 ${source.color.replace('text-', 'bg-')}`}></div>
