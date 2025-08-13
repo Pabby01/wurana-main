@@ -1,321 +1,436 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Grid, List, Star, MapPin, Clock, Bookmark, BookmarkCheck } from 'lucide-react';
-// import { ToggleGroup, ToggleGroupItem } from '../ui/ToggleGroup'; (temporarily commented until implemented)
+import { Grid, List, Star, Clock, Bookmark, BookmarkCheck } from 'lucide-react';
 import { NeonButton } from '../ui/NeonButton';
-import { FilterPanel } from '../ui/FilterPanel';
 import { fetchGigs } from '../../services/api';
 import { clsx } from 'clsx';
 import { Card } from '../ui/Card';
 
+// Define Service interface to match the expected structure
 interface Service {
   id: string;
   title: string;
   description: string;
   price: number;
   currency: string;
-  artisan: {
+  rating: number;
+  reviewCount: number;
+  seller: {
+    id: string;
     name: string;
-    avatar: string;
+    avatar?: string;
     rating: number;
-    location: string;
   };
-  image: string;
+  images: string[];
+  tags: string[];
+  deliveryTime: number;
   category: string;
-  deliveryTime: string;
-  badges: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
-interface Filters {
+// Define the Gig interface based on API structure
+interface GigFromAPI {
+  id: string;
+  title: string;
+  description: string;
+  rating: number;
+  reviewCount: number;
+  seller: {
+    id: string;
+    name: string;
+    avatar?: string;
+    rating: number;
+  };
+  images: string[];
+  tags: string[];
   category: string;
-  priceRange: [number, number];
-  location: string;
+  createdAt: string;
+  updatedAt: string;
+  packages?: Array<{
+    price: number;
+    currency: string;
+    deliveryTime: number;
+  }>;
 }
 
-const filterSections = [
-  {
-    id: 'category',
-    title: 'Category',
-    type: 'checkbox' as const,
-    options: [
-      { id: 'fashion', label: 'Fashion & Accessories', count: 234 },
-      { id: 'art', label: 'Art & Design', count: 189 },
-      { id: 'woodwork', label: 'Woodworking', count: 156 },
-      { id: 'textiles', label: 'Textiles', count: 143 }
-    ]
-  },
-  {
-    id: 'experience',
-    title: 'Experience Level',
-    type: 'checkbox' as const,
-    options: [
-      { id: 'junior', label: 'Junior (0-2 years)', count: 89 },
-      { id: 'mid', label: 'Mid-level (2-5 years)', count: 156 },
-      { id: 'senior', label: 'Senior (5+ years)', count: 234 }
-    ]
-  },
-  {
-    id: 'rating',
-    title: 'Rating',
-    type: 'rating' as const
-  },
-  {
-    id: 'price',
-    title: 'Price Range',
-    type: 'range' as const,
-    min: 0,
-    max: 1000
-  }
-];
+// Function to convert Gig to Service format
+const convertGigToService = (gig: GigFromAPI): Service => ({
+  id: gig.id,
+  title: gig.title,
+  description: gig.description,
+  price: gig.packages?.[0]?.price || 0,
+  currency: gig.packages?.[0]?.currency || 'SOL',
+  rating: gig.rating,
+  reviewCount: gig.reviewCount,
+  seller: gig.seller,
+  images: gig.images,
+  tags: gig.tags,
+  deliveryTime: gig.packages?.[0]?.deliveryTime || 0,
+  category: gig.category,
+  createdAt: gig.createdAt,
+  updatedAt: gig.updatedAt
+});
 
 interface ServiceGridProps {
-  className?: string;
+  searchTerm?: string;
+  selectedCategory?: string;
+  priceRange?: [number, number];
+  sortBy?: 'price' | 'rating' | 'newest' | 'popular';
 }
 
-export const ServiceGrid: React.FC<ServiceGridProps> = ({ className }) => {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [savedServices, setSavedServices] = useState<Set<string>>(new Set());
-  const [sortBy, setSortBy] = useState('relevance');
-  const [filters, setFilters] = useState<Filters>({
-    category: '',
-    priceRange: [0, 1000],
-    location: ''
-  });
+// Map component sortBy values to API sortBy values
+const mapSortByToAPI = (sortBy: string): 'price' | 'rating' | 'deliveryTime' | 'createdAt' => {
+  switch (sortBy) {
+    case 'newest':
+      return 'createdAt';
+    case 'popular':
+      return 'rating';
+    case 'price':
+      return 'price';
+    case 'rating':
+      return 'rating';
+    default:
+      return 'createdAt';
+  }
+};
 
+export const ServiceGrid: React.FC<ServiceGridProps> = ({
+  searchTerm = '',
+  selectedCategory = '',
+  priceRange,
+  sortBy = 'newest'
+}) => {
   const [gigs, setGigs] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [savedGigs, setSavedGigs] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     const loadGigs = async () => {
       try {
         setLoading(true);
-        const response = await fetchGigs();
-        setGigs(response);
-        setLoading(false);
+        setError(null);
+        
+        const filters = {
+          search: searchTerm,
+          category: selectedCategory,
+          minPrice: priceRange?.[0],
+          maxPrice: priceRange?.[1],
+          sortBy: mapSortByToAPI(sortBy),
+          page: currentPage,
+          limit: 12
+        };
+
+        const response = await fetchGigs(filters);
+        
+        // Extract the data from the API response and convert gigs to services
+        const services = response.data.gigs.map(convertGigToService);
+        setGigs(services);
+        setTotalPages(response.data.totalPages);
+        setTotal(response.data.total);
+        
       } catch (err) {
-        setError('Failed to load gigs');
+        console.error('Error fetching gigs:', err);
+        setError('Failed to load services. Please try again.');
+      } finally {
         setLoading(false);
       }
     };
 
     loadGigs();
-  }, []);
+  }, [searchTerm, selectedCategory, priceRange, sortBy, currentPage]);
 
-  const toggleSaveService = (serviceId: string) => {
-    const newSaved = new Set(savedServices);
-    if (newSaved.has(serviceId)) {
-      newSaved.delete(serviceId);
-    } else {
-      newSaved.add(serviceId);
-    }
-    setSavedServices(newSaved);
+  const toggleSaveGig = (gigId: string) => {
+    setSavedGigs(prev => 
+      prev.includes(gigId) 
+        ? prev.filter(id => id !== gigId)
+        : [...prev, gigId]
+    );
   };
 
-  const handleFilterChange = (sectionId: string, value: unknown) => {
-    setFilters({ ...filters, [sectionId]: value });
+  const formatPrice = (price: number, currency: string) => {
+    return `${price} ${currency}`;
   };
 
-  const ServiceCard: React.FC<{ service: Service; isListView?: boolean }> = ({ 
-    service, 
-    isListView = false 
-  }) => (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      whileHover={{ y: -4 }}
-      className={clsx(
-        isListView ? 'w-full' : 'w-full'
-      )}
-    >
-      <Card hover className={clsx(
-        'overflow-hidden cursor-pointer',
-        isListView ? 'flex' : 'block'
-      )}>
-        <div className={clsx(
-          'relative',
-          isListView ? 'w-48 flex-shrink-0' : 'w-full'
-        )}>
-          <img
-            src={service.image}
-            alt={service.title}
-            className={clsx(
-              'object-cover',
-              isListView ? 'w-full h-32' : 'w-full h-48'
-            )}
-          />
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleSaveService(service.id);
-            }}
-            className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-colors"
-          >
-            {savedServices.has(service.id) ? (
-              <BookmarkCheck className="w-4 h-4 text-purple-600" />
-            ) : (
-              <Bookmark className="w-4 h-4 text-gray-600" />
-            )}
-          </motion.button>
-          <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-medium text-gray-700">
-            {service.category}
-          </div>
-        </div>
+  const getDeliveryText = (days: number) => {
+    if (days === 1) return '1 day delivery';
+    if (days < 7) return `${days} days delivery`;
+    const weeks = Math.floor(days / 7);
+    return `${weeks} week${weeks > 1 ? 's' : ''} delivery`;
+  };
 
-        <div className={clsx(
-          'p-6 space-y-4',
-          isListView ? 'flex-1' : 'w-full'
-        )}>
-          <h3 className="font-semibold text-lg text-gray-900 line-clamp-2">
-            {service.title}
-          </h3>
-
-          {isListView && (
-            <p className="text-gray-600 text-sm line-clamp-2">
-              {service.description}
-            </p>
-          )}
-
-          <div className="flex items-center space-x-3">
-            <img
-              src={service.artisan.avatar}
-              alt={service.artisan.name}
-              className="w-8 h-8 rounded-full object-cover"
-            />
-            <div className="flex-1 min-w-0">
-              <div className="font-medium text-gray-900 truncate text-sm">
-                {service.artisan.name}
-              </div>
-              <div className="flex items-center space-x-1 text-xs text-gray-500">
-                <MapPin className="w-3 h-3" />
-                <span className="truncate">{service.artisan.location}</span>
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <Card key={index} className="animate-pulse">
+            <div className="h-48 bg-gray-200 rounded-t-lg" />
+            <div className="p-4 space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-3/4" />
+              <div className="h-3 bg-gray-200 rounded w-full" />
+              <div className="h-3 bg-gray-200 rounded w-2/3" />
+              <div className="flex justify-between items-center">
+                <div className="h-4 bg-gray-200 rounded w-1/3" />
+                <div className="h-4 bg-gray-200 rounded w-1/4" />
               </div>
             </div>
-          </div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-1">
-              <Star className="w-4 h-4 text-yellow-400 fill-current" />
-              <span className="font-medium text-gray-900 text-sm">{service.artisan.rating}</span>
-              <span className="text-gray-500 text-sm">({service.badges})</span>
-            </div>
-            <div className="flex items-center space-x-1 text-sm text-gray-500">
-              <Clock className="w-3 h-3" />
-              <span>{service.deliveryTime}</span>
-            </div>
-          </div>
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-red-600 mb-4">{error}</div>
+        <NeonButton 
+          onClick={() => window.location.reload()}
+          variant="primary"
+        >
+          Try Again
+        </NeonButton>
+      </div>
+    );
+  }
 
-          <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-            <div>
-              <div className="text-xs text-gray-500">Starting at</div>
-              <div className="font-bold text-lg text-gray-900">
-                {service.price} {service.currency}
-              </div>
-            </div>
-            <NeonButton variant="primary" size="sm">
-              View Details
-            </NeonButton>
-          </div>
-        </div>
-      </Card>
-    </motion.div>
-  );
+  if (gigs.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-gray-500 mb-4">No services found matching your criteria.</div>
+        <p className="text-gray-400">Try adjusting your search or filters.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className={clsx('max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8', className)}>
-      {loading && <div className="text-center p-4">Loading services...</div>}
-      {error && <div className="text-red-500 p-4 text-center">{error}</div>}
-      {!loading && !error && (
-        <>
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Filters Sidebar */}
-            <div className="lg:w-80 flex-shrink-0 mt-7">
-              <FilterPanel
-                sections={filterSections}
-                onFilterChange={handleFilterChange}
-              />
-            </div>
+    <div className="space-y-6">
+      {/* View Toggle and Results Count */}
+      <div className="flex items-center justify-between">
+        <div className="text-gray-600">
+          Showing {gigs.length} of {total} services
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setViewMode('grid')}
+            className={clsx(
+              'p-2 rounded-lg transition-colors',
+              viewMode === 'grid' 
+                ? 'bg-purple-100 text-purple-600' 
+                : 'text-gray-400 hover:text-gray-600'
+            )}
+            aria-label="Grid view"
+            title="Grid view"
+          >
+            <Grid className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            className={clsx(
+              'p-2 rounded-lg transition-colors',
+              viewMode === 'list' 
+                ? 'bg-purple-100 text-purple-600' 
+                : 'text-gray-400 hover:text-gray-600'
+            )}
+            aria-label="List view"
+            title="List view"
+          >
+            <List className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
 
-            {/* Main Content */}
-            <div className="flex-1">
-              {/* Controls */}
-              <div className="flex items-center justify-between mt-9 mb-6">
-                <div className="flex items-center space-x-4">
-                  <span className="text-gray-600">
-                    Showing {gigs.length} services
-                  </span>
-                  
-                  <label htmlFor="sort-select" className="sr-only">
-                    Sort services
-                  </label>
-                  <select
-                    id="sort-select"
-                    aria-label="Sort services"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  >
-                    <option value="relevance">Sort by Relevance</option>
-                    <option value="price_low">Price: Low to High</option>
-                    <option value="price_high">Price: High to Low</option>
-                    <option value="rating">Highest Rated</option>
-                    <option value="newest">Newest First</option>
-                  </select>
-                </div>
-
-                <div className="flex gap-2">
-                  <NeonButton 
-                    size="sm" 
-                    onClick={() => setViewMode('grid')} 
-                    variant={viewMode === 'grid' ? 'accent' : 'secondary'}
-                  >
-                    <Grid size={18} />
-                  </NeonButton>
-                  <NeonButton 
-                    size="sm" 
-                    onClick={() => setViewMode('list')} 
-                    variant={viewMode === 'list' ? 'accent' : 'secondary'}
-                  >
-                    <List size={18} />
-                  </NeonButton>
-                </div>
-              </div>
-
-              {/* Services Grid/List */}
-              <motion.div
-                layout
+      {/* Services Grid/List */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={viewMode}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className={clsx(
+            viewMode === 'grid' 
+              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
+              : 'space-y-4'
+          )}
+        >
+          {gigs.map((service) => (
+            <motion.div
+              key={service.id}
+              layout
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card 
                 className={clsx(
-                  'gap-6',
-                  viewMode === 'grid'
-                    ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
-                    : 'flex flex-col space-y-4'
+                  'group hover:shadow-lg transition-all duration-300 cursor-pointer',
+                  viewMode === 'list' && 'flex flex-row'
                 )}
+                hover
               >
-                <AnimatePresence>
-                  {gigs.map((service) => (
-                    <ServiceCard
-                      key={service.id}
-                      service={service}
-                      isListView={viewMode === 'list'}
+                {/* Service Image */}
+                <div className={clsx(
+                  'relative overflow-hidden',
+                  viewMode === 'grid' ? 'h-48' : 'w-48 h-32',
+                  viewMode === 'grid' ? 'rounded-t-lg' : 'rounded-l-lg'
+                )}>
+                  {service.images.length > 0 ? (
+                    <img
+                      src={service.images[0]}
+                      alt={service.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                  ))}
-                </AnimatePresence>
-              </motion.div>
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center">
+                      <div className="text-purple-400 text-4xl">🎨</div>
+                    </div>
+                  )}
+                  
+                  {/* Save Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleSaveGig(service.id);
+                    }}
+                    className="absolute top-3 right-3 p-2 bg-white/90 rounded-full shadow-sm hover:bg-white transition-colors"
+                    aria-label={savedGigs.includes(service.id) ? 'Remove from saved' : 'Save service'}
+                    title={savedGigs.includes(service.id) ? 'Remove from saved' : 'Save service'}
+                  >
+                    {savedGigs.includes(service.id) ? (
+                      <BookmarkCheck className="w-4 h-4 text-purple-600" />
+                    ) : (
+                      <Bookmark className="w-4 h-4 text-gray-600" />
+                    )}
+                  </button>
+                </div>
 
-              {/* Load More */}
-              <div className="text-center mt-12">
-                <NeonButton variant="secondary" size="lg">
-                  Load More Services
-                </NeonButton>
-              </div>
-            </div>
+                {/* Service Content */}
+                <div className="p-4 flex-1">
+                  {/* Seller Info */}
+                  <div className="flex items-center space-x-2 mb-2">
+                    <div className="w-6 h-6 rounded-full overflow-hidden">
+                      {service.seller.avatar ? (
+                        <img
+                          src={service.seller.avatar}
+                          alt={service.seller.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center">
+                          <span className="text-white text-xs font-semibold">
+                            {service.seller.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-sm text-gray-600">{service.seller.name}</span>
+                    <div className="flex items-center space-x-1">
+                      <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                      <span className="text-xs text-gray-600">{service.seller.rating}</span>
+                    </div>
+                  </div>
+
+                  {/* Service Title */}
+                  <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-purple-600 transition-colors">
+                    {service.title}
+                  </h3>
+
+                  {/* Service Description */}
+                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                    {service.description}
+                  </p>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {service.tags.slice(0, 3).map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {service.tags.length > 3 && (
+                      <span className="px-2 py-1 bg-gray-50 text-gray-500 text-xs rounded-full">
+                        +{service.tags.length - 3}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Service Meta */}
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                    <div className="flex items-center space-x-1">
+                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                      <span>{service.rating}</span>
+                      <span>({service.reviewCount})</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Clock className="w-4 h-4" />
+                      <span>{getDeliveryText(service.deliveryTime)}</span>
+                    </div>
+                  </div>
+
+                  {/* Price */}
+                  <div className="flex items-center justify-between">
+                    <div className="text-lg font-bold text-gray-900">
+                      From {formatPrice(service.price, service.currency)}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center space-x-2 mt-8">
+          <NeonButton
+            variant="secondary"
+            size="sm"
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </NeonButton>
+          
+          <div className="flex items-center space-x-1">
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+              const page = i + 1;
+              return (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={clsx(
+                    'px-3 py-1 rounded-lg text-sm transition-colors',
+                    currentPage === page
+                      ? 'bg-purple-600 text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  )}
+                >
+                  {page}
+                </button>
+              );
+            })}
           </div>
-        </>
+
+          <NeonButton
+            variant="secondary"
+            size="sm"
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </NeonButton>
+        </div>
       )}
     </div>
   );

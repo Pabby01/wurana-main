@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, User, Menu, X, LogOut } from 'lucide-react';
+import { Search, User, Menu, X, LogOut, Wallet, Settings, BarChart3, MessageSquare, Star, ChevronDown, Package, FileText } from 'lucide-react';
 import { NeonButton } from '../ui/NeonButton';
 import { GlassmorphicCard } from '../ui/GlassmorphicCard';
 import { Input } from '../ui/Input';
@@ -10,11 +10,27 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { user, isAuthenticated, logout } = useAuth();
   const { scrollPosition } = useScrollPosition();
   const location = useLocation();
   const navigate = useNavigate();
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +46,20 @@ export const Header: React.FC = () => {
     }
   };
 
+  const handleWalletClick = () => {
+    navigate('/wallet');
+  };
+
+  const profileMenuItems = [
+    { icon: BarChart3, label: 'Dashboard', path: '/dashboard' },
+    { icon: User, label: 'Profile', path: '/profile' },
+    { icon: MessageSquare, label: 'Messages', path: '/chat' },
+    { icon: Star, label: 'Reviews', path: '/reviews' },
+    { icon: Package, label: 'Gigs', path: '/gigs/manage' },
+    { icon: FileText, label: 'My Bids', path: '/bids' },
+    { icon: Settings, label: 'Settings', path: '/settings' },
+  ];
+
   const headerOpacity = Math.min(scrollPosition / 100, 0.95);
   const headerScale = Math.max(1 - scrollPosition / 2000, 0.95);
   const shouldShrink = scrollPosition > 50;
@@ -37,6 +67,7 @@ export const Header: React.FC = () => {
   const navItems = [
     { label: 'Browse Services', path: '/marketplace' },
     { label: 'Find Jobs', path: '/jobs' },
+    { label: 'Post Job', path: '/jobs/post' },
     { label: 'How it Works', path: '/how-it-works' }
   ];
 
@@ -135,19 +166,75 @@ export const Header: React.FC = () => {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="text-white text-sm">{user.name}</span>
-                  </div>
-                  <NeonButton
-                    variant="accent"
-                    size="sm"
-                    onClick={handleAuthAction}
+                  {/* Wallet Button */}
+                  <motion.button
+                    onClick={handleWalletClick}
+                    className="p-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 rounded-lg border border-green-500/30 text-white transition-all duration-200 flex items-center space-x-2"
+                    whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(34, 197, 94, 0.3)' }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <LogOut className="w-4 h-4" />
-                  </NeonButton>
+                    <Wallet className="w-4 h-4" />
+                    <span className="text-sm font-medium">Wallet</span>
+                  </motion.button>
+
+                  {/* Profile Dropdown */}
+                  <div className="relative" ref={profileDropdownRef}>
+                    <motion.button
+                      onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                      className="flex items-center space-x-2 p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
+                        <User className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <span className="text-sm font-medium">{user.name}</span>
+                        <span className="text-xs text-white/70">{user.email}</span>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
+                    </motion.button>
+
+                    {/* Profile Dropdown Menu */}
+                    <AnimatePresence>
+                      {isProfileDropdownOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                          className="absolute right-0 top-full mt-2 w-56 z-50"
+                        >
+                          <GlassmorphicCard className="py-2" opacity={0.95}>
+                            {profileMenuItems.map((item, index) => (
+                              <Link
+                                key={item.path}
+                                to={item.path}
+                                onClick={() => setIsProfileDropdownOpen(false)}
+                                className="flex items-center space-x-3 px-4 py-3 text-white/90 hover:text-white hover:bg-white/10 transition-colors group"
+                              >
+                                <item.icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                <span className="text-sm font-medium">{item.label}</span>
+                                {index === 0 && location.pathname === item.path && (
+                                  <div className="w-2 h-2 bg-yellow-400 rounded-full ml-auto" />
+                                )}
+                              </Link>
+                            ))}
+                            <hr className="border-white/20 my-2" />
+                            <button
+                              onClick={() => {
+                                handleAuthAction();
+                                setIsProfileDropdownOpen(false);
+                              }}
+                              className="flex items-center space-x-3 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors group w-full text-left"
+                            >
+                              <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                              <span className="text-sm font-medium">Sign Out</span>
+                            </button>
+                          </GlassmorphicCard>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </motion.div>
               ) : (
                 <NeonButton
