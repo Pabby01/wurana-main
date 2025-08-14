@@ -38,11 +38,25 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/wurana')
 import authRoutes from './routes/auth.routes.js';
 import jobRoutes from './routes/job.routes.js';
 import chatRoutes from './routes/chat.routes.js';
+import gigRoutes from './routes/gig.routes.js';
+import reviewRoutes from './routes/review.routes.js';
+import fileRoutes from './routes/file.routes.js';
+import walletRoutes from './routes/wallet.routes.js';
 
 // Use routes
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/gigs', gigRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/files', fileRoutes);
+app.use('/api/wallet', walletRoutes);
+
+// Import file controller for cleanup
+import { cleanupTemporaryFiles } from './controllers/file.controller.js';
+
+// Schedule temporary file cleanup
+setInterval(cleanupTemporaryFiles, 24 * 60 * 60 * 1000); // Run daily
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
