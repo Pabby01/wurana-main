@@ -177,13 +177,12 @@ export const BrowseJobsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Browse Jobs
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Browse Jobs</h1>
           <p className="text-gray-600">
-            Find your next freelance opportunity from {filteredAndSortedJobs.length} available jobs
+            Find your next freelance opportunity from{" "}
+            {filteredAndSortedJobs.length} available jobs
           </p>
         </div>
 
@@ -207,11 +206,16 @@ export const BrowseJobsPage: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <ArrowUpDown className="w-4 h-4 text-gray-600" />
                   <select
-                    value={filters.sortBy || 'newest'}
-                    onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value as SortOption }))}
+                    value={filters.sortBy || "newest"}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        sortBy: e.target.value as SortOption,
+                      }))
+                    }
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                   >
-                    {sortOptions.map(option => (
+                    {sortOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -220,7 +224,7 @@ export const BrowseJobsPage: React.FC = () => {
                 </div>
 
                 <NeonButton
-                  variant={showFilters ? 'primary' : 'secondary'}
+                  variant={showFilters ? "primary" : "secondary"}
                   size="sm"
                   onClick={() => setShowFilters(!showFilters)}
                   className="relative"
@@ -248,7 +252,9 @@ export const BrowseJobsPage: React.FC = () => {
             >
               <GlassmorphicCard className="p-6 sticky top-8" opacity={0.2}>
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Filters
+                  </h3>
                   <div className="flex items-center space-x-2">
                     {activeFiltersCount > 0 && (
                       <button
@@ -276,17 +282,30 @@ export const BrowseJobsPage: React.FC = () => {
                       Categories
                     </label>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {jobCategories.map(category => (
-                        <label key={category} className="flex items-center space-x-2">
+                      {jobCategories.map((category) => (
+                        <label
+                          key={category}
+                          className="flex items-center space-x-2"
+                        >
                           <input
                             type="checkbox"
-                            checked={filters.categories?.includes(category) || false}
+                            checked={
+                              filters.categories?.includes(category) || false
+                            }
                             onChange={(e) => {
                               const categories = filters.categories || [];
                               if (e.target.checked) {
-                                setFilters(prev => ({ ...prev, categories: [...categories, category] }));
+                                setFilters((prev) => ({
+                                  ...prev,
+                                  categories: [...categories, category],
+                                }));
                               } else {
-                                setFilters(prev => ({ ...prev, categories: categories.filter(c => c !== category) }));
+                                setFilters((prev) => ({
+                                  ...prev,
+                                  categories: categories.filter(
+                                    (c) => c !== category
+                                  ),
+                                }));
                               }
                             }}
                             className="text-purple-600 rounded"
@@ -304,16 +323,18 @@ export const BrowseJobsPage: React.FC = () => {
                     </label>
                     <div className="space-y-3">
                       <select
-                        value={filters.budgetRange?.currency || 'SOL'}
-                        onChange={(e) => setFilters(prev => ({
-                          ...prev,
-                          budgetRange: {
-                            ...prev.budgetRange,
-                            min: prev.budgetRange?.min || 0,
-                            max: prev.budgetRange?.max || 100,
-                            currency: e.target.value as 'SOL' | 'USDC'
-                          }
-                        }))}
+                        value={filters.budgetRange?.currency || "SOL"}
+                        onChange={(e) =>
+                          setFilters((prev) => ({
+                            ...prev,
+                            budgetRange: {
+                              ...prev.budgetRange,
+                              min: prev.budgetRange?.min || 0,
+                              max: prev.budgetRange?.max || 100,
+                              currency: e.target.value as "SOL" | "USDC",
+                            },
+                          }))
+                        }
                         className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                       >
                         <option value="SOL">SOL</option>
@@ -323,31 +344,35 @@ export const BrowseJobsPage: React.FC = () => {
                         <Input
                           type="number"
                           placeholder="Min"
-                          value={filters.budgetRange?.min || ''}
-                          onChange={(e) => setFilters(prev => ({
-                            ...prev,
-                            budgetRange: {
-                              ...prev.budgetRange,
-                              min: parseFloat(e.target.value) || 0,
-                              max: prev.budgetRange?.max || 100,
-                              currency: prev.budgetRange?.currency || 'SOL'
-                            }
-                          }))}
+                          value={filters.budgetRange?.min || ""}
+                          onChange={(e) =>
+                            setFilters((prev) => ({
+                              ...prev,
+                              budgetRange: {
+                                ...prev.budgetRange,
+                                min: parseFloat(e.target.value) || 0,
+                                max: prev.budgetRange?.max || 100,
+                                currency: prev.budgetRange?.currency || "SOL",
+                              },
+                            }))
+                          }
                           className="text-sm"
                         />
                         <Input
                           type="number"
                           placeholder="Max"
-                          value={filters.budgetRange?.max || ''}
-                          onChange={(e) => setFilters(prev => ({
-                            ...prev,
-                            budgetRange: {
-                              ...prev.budgetRange,
-                              min: prev.budgetRange?.min || 0,
-                              max: parseFloat(e.target.value) || 100,
-                              currency: prev.budgetRange?.currency || 'SOL'
-                            }
-                          }))}
+                          value={filters.budgetRange?.max || ""}
+                          onChange={(e) =>
+                            setFilters((prev) => ({
+                              ...prev,
+                              budgetRange: {
+                                ...prev.budgetRange,
+                                min: prev.budgetRange?.min || 0,
+                                max: parseFloat(e.target.value) || 100,
+                                currency: prev.budgetRange?.currency || "SOL",
+                              },
+                            }))
+                          }
                           className="text-sm"
                         />
                       </div>
@@ -360,21 +385,28 @@ export const BrowseJobsPage: React.FC = () => {
                       Work Location
                     </label>
                     <div className="space-y-2">
-                      {(['remote', 'onsite', 'hybrid'] as LocationType[]).map(type => (
-                        <label key={type} className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            name="locationType"
-                            checked={filters.location?.type === type}
-                            onChange={() => setFilters(prev => ({
-                              ...prev,
-                              location: { ...prev.location, type: type }
-                            }))}
-                            className="text-purple-600"
-                          />
-                          <span className="text-sm capitalize">{type}</span>
-                        </label>
-                      ))}
+                      {(["remote", "onsite", "hybrid"] as LocationType[]).map(
+                        (type) => (
+                          <label
+                            key={type}
+                            className="flex items-center space-x-2"
+                          >
+                            <input
+                              type="radio"
+                              name="locationType"
+                              checked={filters.location?.type === type}
+                              onChange={() =>
+                                setFilters((prev) => ({
+                                  ...prev,
+                                  location: { ...prev.location, type: type },
+                                }))
+                              }
+                              className="text-purple-600"
+                            />
+                            <span className="text-sm capitalize">{type}</span>
+                          </label>
+                        )
+                      )}
                     </div>
                   </div>
 
@@ -384,17 +416,26 @@ export const BrowseJobsPage: React.FC = () => {
                       Required Skills
                     </label>
                     <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {skillsList.slice(0, 20).map(skill => (
-                        <label key={skill} className="flex items-center space-x-2">
+                      {skillsList.slice(0, 20).map((skill) => (
+                        <label
+                          key={skill}
+                          className="flex items-center space-x-2"
+                        >
                           <input
                             type="checkbox"
                             checked={filters.skills?.includes(skill) || false}
                             onChange={(e) => {
                               const skills = filters.skills || [];
                               if (e.target.checked) {
-                                setFilters(prev => ({ ...prev, skills: [...skills, skill] }));
+                                setFilters((prev) => ({
+                                  ...prev,
+                                  skills: [...skills, skill],
+                                }));
                               } else {
-                                setFilters(prev => ({ ...prev, skills: skills.filter(s => s !== skill) }));
+                                setFilters((prev) => ({
+                                  ...prev,
+                                  skills: skills.filter((s) => s !== skill),
+                                }));
                               }
                             }}
                             className="text-purple-600 rounded"
@@ -411,24 +452,41 @@ export const BrowseJobsPage: React.FC = () => {
                       Priority Level
                     </label>
                     <div className="space-y-2">
-                      {(Object.keys(priorityColors) as PriorityLevel[]).map(priority => (
-                        <label key={priority} className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            checked={filters.priority?.includes(priority) || false}
-                            onChange={(e) => {
-                              const priorities = filters.priority || [];
-                              if (e.target.checked) {
-                                setFilters(prev => ({ ...prev, priority: [...priorities, priority] }));
-                              } else {
-                                setFilters(prev => ({ ...prev, priority: priorities.filter(p => p !== priority) }));
+                      {(Object.keys(priorityColors) as PriorityLevel[]).map(
+                        (priority) => (
+                          <label
+                            key={priority}
+                            className="flex items-center space-x-2"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={
+                                filters.priority?.includes(priority) || false
                               }
-                            }}
-                            className="text-purple-600 rounded"
-                          />
-                          <span className="text-sm capitalize">{priority}</span>
-                        </label>
-                      ))}
+                              onChange={(e) => {
+                                const priorities = filters.priority || [];
+                                if (e.target.checked) {
+                                  setFilters((prev) => ({
+                                    ...prev,
+                                    priority: [...priorities, priority],
+                                  }));
+                                } else {
+                                  setFilters((prev) => ({
+                                    ...prev,
+                                    priority: priorities.filter(
+                                      (p) => p !== priority
+                                    ),
+                                  }));
+                                }
+                              }}
+                              className="text-purple-600 rounded"
+                            />
+                            <span className="text-sm capitalize">
+                              {priority}
+                            </span>
+                          </label>
+                        )
+                      )}
                     </div>
                   </div>
                 </div>
@@ -441,14 +499,17 @@ export const BrowseJobsPage: React.FC = () => {
             {filteredAndSortedJobs.length === 0 ? (
               <GlassmorphicCard className="p-12 text-center" opacity={0.2}>
                 <Briefcase className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No jobs found</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No jobs found
+                </h3>
                 <p className="text-gray-600 mb-4">
-                  Try adjusting your search terms or filters to find more opportunities.
+                  Try adjusting your search terms or filters to find more
+                  opportunities.
                 </p>
                 <NeonButton
                   variant="primary"
                   onClick={() => {
-                    setSearchTerm('');
+                    setSearchTerm("");
                     clearFilters();
                   }}
                 >
@@ -464,11 +525,15 @@ export const BrowseJobsPage: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <GlassmorphicCard className="p-6 hover:shadow-lg transition-shadow cursor-pointer" opacity={0.2} hover>
+                    <GlassmorphicCard
+                      className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                      opacity={0.2}
+                      hover
+                    >
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between mb-2">
-                            <h3 
+                            <h3
                               className="text-xl font-semibold text-gray-900 hover:text-purple-600 transition-colors cursor-pointer"
                               onClick={() => navigate(`/jobs/${job.id}`)}
                             >
@@ -478,16 +543,30 @@ export const BrowseJobsPage: React.FC = () => {
                               onClick={() => toggleSaveJob(job.id)}
                               className={`ml-4 p-2 rounded-lg transition-colors ${
                                 savedJobs.includes(job.id)
-                                  ? 'text-purple-600 bg-purple-50'
-                                  : 'text-gray-400 hover:text-purple-600 hover:bg-purple-50'
+                                  ? "text-purple-600 bg-purple-50"
+                                  : "text-gray-400 hover:text-purple-600 hover:bg-purple-50"
                               }`}
-                              aria-label={savedJobs.includes(job.id) ? 'Remove from saved jobs' : 'Save job'}
-                              title={savedJobs.includes(job.id) ? 'Remove from saved jobs' : 'Save job'}
+                              aria-label={
+                                savedJobs.includes(job.id)
+                                  ? "Remove from saved jobs"
+                                  : "Save job"
+                              }
+                              title={
+                                savedJobs.includes(job.id)
+                                  ? "Remove from saved jobs"
+                                  : "Save job"
+                              }
                             >
-                              <BookmarkIcon className={`w-5 h-5 ${savedJobs.includes(job.id) ? 'fill-current' : ''}`} />
+                              <BookmarkIcon
+                                className={`w-5 h-5 ${
+                                  savedJobs.includes(job.id)
+                                    ? "fill-current"
+                                    : ""
+                                }`}
+                              />
                             </button>
                           </div>
-                          
+
                           <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                             <span className="font-medium">{job.category}</span>
                             {job.subcategory && (
@@ -498,20 +577,30 @@ export const BrowseJobsPage: React.FC = () => {
                             )}
                             <span>•</span>
                             <span>{getTimeAgo(job.createdAt)}</span>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${priorityColors[job.priority]}`}>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                priorityColors[job.priority]
+                              }`}
+                            >
                               {job.priority}
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      <p className="text-gray-700 mb-4 line-clamp-3">{job.description}</p>
+                      <p className="text-gray-700 mb-4 line-clamp-3">
+                        {job.description}
+                      </p>
 
                       <div className="flex flex-wrap items-center gap-4 mb-4">
                         <div className="flex items-center space-x-2 text-gray-600">
                           <DollarSign className="w-4 h-4" />
-                          <span className="font-medium">{formatBudget(job)}</span>
-                          {job.budget.type === 'hourly' && <span className="text-sm">/hour</span>}
+                          <span className="font-medium">
+                            {formatBudget(job)}
+                          </span>
+                          {job.budget.type === "hourly" && (
+                            <span className="text-sm">/hour</span>
+                          )}
                         </div>
                         <div className="flex items-center space-x-2 text-gray-600">
                           <Calendar className="w-4 h-4" />
@@ -519,7 +608,9 @@ export const BrowseJobsPage: React.FC = () => {
                         </div>
                         <div className="flex items-center space-x-2 text-gray-600">
                           <MapPin className="w-4 h-4" />
-                          <span className="capitalize">{job.location.type}</span>
+                          <span className="capitalize">
+                            {job.location.type}
+                          </span>
                         </div>
                         <div className="flex items-center space-x-2 text-gray-600">
                           <Eye className="w-4 h-4" />
@@ -534,7 +625,7 @@ export const BrowseJobsPage: React.FC = () => {
                       {job.skills.length > 0 && (
                         <div className="mb-4">
                           <div className="flex flex-wrap gap-2">
-                            {job.skills.slice(0, 6).map(skill => (
+                            {job.skills.slice(0, 6).map((skill) => (
                               <span
                                 key={skill}
                                 className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full"
@@ -557,14 +648,17 @@ export const BrowseJobsPage: React.FC = () => {
                             <div className="flex items-center space-x-1 text-orange-600">
                               <Clock className="w-4 h-4" />
                               <span className="text-sm">
-                                Deadline: {job.timeline.deadline.toLocaleDateString()}
+                                Deadline:{" "}
+                                {job.timeline.deadline.toLocaleDateString()}
                               </span>
                             </div>
                           )}
-                          {job.priority === 'urgent' && (
+                          {job.priority === "urgent" && (
                             <div className="flex items-center space-x-1 text-red-600">
                               <AlertCircle className="w-4 h-4" />
-                              <span className="text-sm font-medium">Urgent</span>
+                              <span className="text-sm font-medium">
+                                Urgent
+                              </span>
                             </div>
                           )}
                         </div>
@@ -580,7 +674,9 @@ export const BrowseJobsPage: React.FC = () => {
                           <NeonButton
                             variant="primary"
                             size="sm"
-                            onClick={() => navigate(`/jobs/${job.id}?action=bid`)}
+                            onClick={() =>
+                              navigate(`/jobs/${job.id}?action=bid`)
+                            }
                           >
                             Submit Proposal
                           </NeonButton>
@@ -593,13 +689,12 @@ export const BrowseJobsPage: React.FC = () => {
             )}
 
             {/* Load More Button */}
-            {filteredAndSortedJobs.length > 0 && filteredAndSortedJobs.length >= 10 && (
-              <div className="mt-8 text-center">
-                <NeonButton variant="secondary">
-                  Load More Jobs
-                </NeonButton>
-              </div>
-            )}
+            {filteredAndSortedJobs.length > 0 &&
+              filteredAndSortedJobs.length >= 10 && (
+                <div className="mt-8 text-center">
+                  <NeonButton variant="secondary">Load More Jobs</NeonButton>
+                </div>
+              )}
           </div>
         </div>
       </div>
