@@ -1,16 +1,16 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Search, Sparkles, Shield, Zap } from 'lucide-react';
-import { NeonButton } from '../ui/NeonButton';
-import { CSS3ParticleBackground } from '../ui/CSS3ParticleBackground';
-import { Input } from '../ui/Input';
+import React from "react";
+import { motion } from "framer-motion";
+import { Search, Sparkles, Shield, Zap } from "lucide-react";
+import { NeonButton } from "../ui/NeonButton";
+import { CSS3ParticleBackground } from "../ui/CSS3ParticleBackground";
+import { Input } from "../ui/Input";
 
 export const Hero: React.FC = () => {
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-purple-600 via-indigo-700 to-indigo-900 overflow-hidden">
       {/* CSS3 Particle Background */}
       <CSS3ParticleBackground />
-      
+
       {/* Background Elements */}
       <div className="absolute inset-0">
         {/* Animated gradient mesh */}
@@ -23,7 +23,7 @@ export const Hero: React.FC = () => {
           transition={{
             duration: 8,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: "easeInOut",
           }}
         />
         <motion.div
@@ -35,10 +35,10 @@ export const Hero: React.FC = () => {
           transition={{
             duration: 10,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: "easeInOut",
           }}
         />
-        
+
         {/* Floating geometric shapes */}
         <motion.div
           className="absolute top-1/4 right-1/4 w-20 h-20 bg-gradient-to-br from-yellow-400/30 to-yellow-600/30 rounded-lg backdrop-blur-sm"
@@ -49,7 +49,7 @@ export const Hero: React.FC = () => {
           transition={{
             duration: 15,
             repeat: Infinity,
-            ease: "linear"
+            ease: "linear",
           }}
         />
         <motion.div
@@ -61,7 +61,7 @@ export const Hero: React.FC = () => {
           transition={{
             duration: 12,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: "easeInOut",
           }}
         />
       </div>
@@ -77,13 +77,17 @@ export const Hero: React.FC = () => {
           >
             <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
               Empower
-              <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent"> Artisans</span>
+              <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
+                {" "}
+                Artisans
+              </span>
               <br />
               on Solana
             </h1>
             <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto">
-              Connect with skilled craftspeople, secure payments with blockchain technology, 
-              and build lasting relationships in the decentralized economy.
+              Connect with skilled craftspeople, secure payments with blockchain
+              technology, and build lasting relationships in the decentralized
+              economy.
             </p>
           </motion.div>
 
@@ -96,7 +100,10 @@ export const Hero: React.FC = () => {
           >
             <motion.div
               className="flex flex-col sm:flex-row gap-4 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl"
-              whileHover={{ scale: 1.02, boxShadow: '0 0 40px rgba(255, 255, 255, 0.1)' }}
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0 0 40px rgba(255, 255, 255, 0.1)",
+              }}
             >
               <Input
                 placeholder="What service are you looking for?"
@@ -134,54 +141,63 @@ export const Hero: React.FC = () => {
             <div className="text-center space-y-4">
               <motion.div
                 className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg"
-                whileHover={{ 
-                  scale: 1.1, 
-                  boxShadow: '0 0 30px rgba(255, 193, 7, 0.5)',
-                  rotate: 5 
+                whileHover={{
+                  scale: 1.1,
+                  boxShadow: "0 0 30px rgba(255, 193, 7, 0.5)",
+                  rotate: 5,
                 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
                 <Shield className="w-8 h-8 text-white" />
               </motion.div>
-              <h3 className="text-xl font-semibold text-white">Secure Escrow</h3>
+              <h3 className="text-xl font-semibold text-white">
+                Secure Escrow
+              </h3>
               <p className="text-white/70">
-                Smart contracts protect both parties with automatic payment release
+                Smart contracts protect both parties with automatic payment
+                release
               </p>
             </div>
 
             <div className="text-center space-y-4">
               <motion.div
                 className="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg"
-                whileHover={{ 
-                  scale: 1.1, 
-                  boxShadow: '0 0 30px rgba(153, 69, 255, 0.5)',
-                  rotate: -5 
+                whileHover={{
+                  scale: 1.1,
+                  boxShadow: "0 0 30px rgba(153, 69, 255, 0.5)",
+                  rotate: -5,
                 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
                 <Sparkles className="w-8 h-8 text-white" />
               </motion.div>
-              <h3 className="text-xl font-semibold text-white">NFT Reputation</h3>
+              <h3 className="text-xl font-semibold text-white">
+                NFT Reputation
+              </h3>
               <p className="text-white/70">
-                Earn unique badges for quality work that build your on-chain reputation
+                Earn unique badges for quality work that build your on-chain
+                reputation
               </p>
             </div>
 
             <div className="text-center space-y-4">
               <motion.div
                 className="w-16 h-16 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg"
-                whileHover={{ 
-                  scale: 1.1, 
-                  boxShadow: '0 0 30px rgba(79, 70, 229, 0.5)',
-                  rotate: 5 
+                whileHover={{
+                  scale: 1.1,
+                  boxShadow: "0 0 30px rgba(79, 70, 229, 0.5)",
+                  rotate: 5,
                 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
                 <Zap className="w-8 h-8 text-white" />
               </motion.div>
-              <h3 className="text-xl font-semibold text-white">Instant Payments</h3>
+              <h3 className="text-xl font-semibold text-white">
+                Instant Payments
+              </h3>
               <p className="text-white/70">
-                Lightning-fast transactions with minimal fees on Solana blockchain
+                Lightning-fast transactions with minimal fees on Solana
+                blockchain
               </p>
             </div>
           </motion.div>
@@ -194,27 +210,27 @@ export const Hero: React.FC = () => {
             className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-16 border-t border-white/20"
           >
             {[
-              { number: '1,000+', label: 'Active Artisans' },
-              { number: '5,000+', label: 'Jobs Completed' },
-              { number: '$2M+', label: 'Paid to Artisans' },
-              { number: '50+', label: 'Countries' }
+              { number: "1,000+", label: "Active Artisans" },
+              { number: "5,000+", label: "Jobs Completed" },
+              { number: "$2M+", label: "Paid to Artisans" },
+              { number: "50+", label: "Countries" },
             ].map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              className="text-center"
-              whileHover={{ scale: 1.05, y: -5 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
               <motion.div
-                className="text-3xl md:text-4xl font-bold text-white"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 + index * 0.1 }}
+                key={stat.label}
+                className="text-center"
+                whileHover={{ scale: 1.05, y: -5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                {stat.number}
+                <motion.div
+                  className="text-3xl md:text-4xl font-bold text-white"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1 + index * 0.1 }}
+                >
+                  {stat.number}
+                </motion.div>
+                <div className="text-white/70">{stat.label}</div>
               </motion.div>
-              <div className="text-white/70">{stat.label}</div>
-            </motion.div>
             ))}
           </motion.div>
         </div>
