@@ -1,63 +1,70 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, User, Menu, X, LogOut, Wallet, Settings, BarChart3, MessageSquare, Star, ChevronDown, Package, FileText } from 'lucide-react';
-import { NeonButton } from '../ui/NeonButton';
-import { GlassmorphicCard } from '../ui/GlassmorphicCard';
-import { Input } from '../ui/Input';
-import { useScrollPosition } from '../../hooks/useScrollPosition';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Search,
+  User,
+  Menu,
+  X,
+  LogOut,
+  Wallet,
+  Settings,
+  BarChart3,
+  MessageSquare,
+  Star,
+  ChevronDown,
+  Package,
+  FileText,
+} from "lucide-react";
+import { NeonButton } from "../ui/NeonButton";
+import { GlassmorphicCard } from "../ui/GlassmorphicCard";
+import { Input } from "../ui/Input";
+import { useScrollPosition } from "../../hooks/useScrollPosition";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const { user, isAuthenticated, logout } = useAuth();
   const { scrollPosition } = useScrollPosition();
   const location = useLocation();
   const navigate = useNavigate();
   const profileDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target as Node)
+      ) {
         setIsProfileDropdownOpen(false);
       }
     };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement search functionality here
-    console.log('Searching for:', searchQuery);
+    console.log("Searching for:", searchQuery);
   };
 
   const handleAuthAction = () => {
-    if (isAuthenticated) {
-      logout();
-    } else {
-      navigate('/auth');
-    }
+    if (isAuthenticated) logout();
+    else navigate("/auth");
   };
 
-  const handleWalletClick = () => {
-    navigate('/wallet');
-  };
+  const handleWalletClick = () => navigate("/wallet");
 
   const profileMenuItems = [
-    { icon: BarChart3, label: 'Dashboard', path: '/dashboard' },
-    { icon: User, label: 'Profile', path: '/profile' },
-    { icon: MessageSquare, label: 'Messages', path: '/chat' },
-    { icon: Star, label: 'Reviews', path: '/reviews' },
-    { icon: Package, label: 'Gigs', path: '/gigs/manage' },
-    { icon: FileText, label: 'My Bids', path: '/bids' },
-    { icon: Settings, label: 'Settings', path: '/settings' },
+    { icon: BarChart3, label: "Dashboard", path: "/dashboard" },
+    { icon: User, label: "Profile", path: "/profile" },
+    { icon: MessageSquare, label: "Messages", path: "/chat" },
+    { icon: Star, label: "Reviews", path: "/reviews" },
+    { icon: Package, label: "Gigs", path: "/gigs/manage" },
+    { icon: FileText, label: "My Bids", path: "/bids" },
+    { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
   const headerOpacity = Math.min(scrollPosition / 100, 0.95);
@@ -65,10 +72,10 @@ export const Header: React.FC = () => {
   const shouldShrink = scrollPosition > 50;
 
   const navItems = [
-    { label: 'Browse Services', path: '/marketplace' },
-    { label: 'Find Jobs', path: '/jobs' },
-    { label: 'Post Job', path: '/jobs/post' },
-    { label: 'How it Works', path: '/how-it-works' }
+    { label: "Browse Services", path: "/marketplace" },
+    { label: "Find Jobs", path: "/jobs" },
+    { label: "Post Job", path: "/jobs/post" },
+    { label: "How it Works", path: "/how-it-works" },
   ];
 
   return (
@@ -79,49 +86,51 @@ export const Header: React.FC = () => {
           background: `rgba(153, 69, 255, ${0.05 + headerOpacity * 0.9})`,
           backdropFilter: `blur(${8 + scrollPosition / 10}px)`,
           WebkitBackdropFilter: `blur(${8 + scrollPosition / 10}px)`,
-          borderRadius: shouldShrink ? '0 0 1.5rem 1.5rem' : '0',
-          boxShadow: shouldShrink 
-            ? '0 4px 20px rgba(153, 69, 255, 0.2)' 
-            : 'none',
+          borderRadius: shouldShrink ? "0 0 1.5rem 1.5rem" : "0",
+          boxShadow: shouldShrink
+            ? "0 4px 20px rgba(153, 69, 255, 0.2)"
+            : "none",
+          color: "#2d2d2d",
         }}
-        animate={{ 
+        animate={{
           scale: headerScale,
-          y: shouldShrink ? -10 : 0
+          y: shouldShrink ? -10 : 0,
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="flex items-center justify-between transition-all duration-300"
-            animate={{ height: shouldShrink ? '60px' : '64px' }}
+            animate={{ height: shouldShrink ? "60px" : "64px" }}
           >
             {/* Logo */}
             <Link to="/">
-              <motion.div 
+              <motion.div
                 className="flex items-center space-x-2 group"
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
                 <motion.div
                   className="relative w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg overflow-hidden"
-                  whileHover={{ 
-                    boxShadow: '0 0 20px rgba(255, 193, 7, 0.5)',
-                    rotate: 5
+                  whileHover={{
+                    boxShadow: "0 0 20px rgba(255, 193, 7, 0.5)",
+                    rotate: 5,
                   }}
                 >
-                  <img 
-                    src="/logo.png" 
+                  <img
+                    src="/logo.png"
                     alt="Wurana Logo"
                     className="w-8 h-8 object-contain transform group-hover:scale-110 transition-transform duration-300"
                   />
-                  {/* Glow effect */}
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-yellow-400/40 to-transparent"
-                    initial={{ x: '-100%' }}
-                    whileHover={{ x: '100%' }}
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: "100%" }}
                     transition={{ duration: 0.6 }}
                   />
                 </motion.div>
-                <span className="text-white font-bold text-xl">Wurana</span>
+                <span className="font-bold text-xl text-[#2d2d2d] group-hover:text-yellow-400 transition-colors">
+                  Wurana
+                </span>
               </motion.div>
             </Link>
 
@@ -131,15 +140,19 @@ export const Header: React.FC = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`text-white/90 hover:text-white transition-colors relative ${
-                    location.pathname === item.path ? 'text-yellow-400' : ''
+                  className={`transition-colors relative ${
+                    location.pathname === item.path
+                      ? "text-yellow-400"
+                      : "text-[#2d2d2d] hover:text-yellow-400"
                   }`}
                 >
                   {item.label}
                   <motion.div
                     className="absolute -bottom-1 left-0 right-0 h-0.5 bg-yellow-400 origin-left"
                     initial={{ scaleX: 0 }}
-                    animate={{ scaleX: location.pathname === item.path ? 1 : 0 }}
+                    animate={{
+                      scaleX: location.pathname === item.path ? 1 : 0,
+                    }}
                     whileHover={{ scaleX: 1 }}
                     transition={{ duration: 0.2 }}
                   />
@@ -159,18 +172,20 @@ export const Header: React.FC = () => {
                   className="w-64"
                 />
               </form>
-              
+
               {isAuthenticated && user ? (
                 <motion.div
                   className="flex items-center space-x-3"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                 >
-                  {/* Wallet Button */}
                   <motion.button
                     onClick={handleWalletClick}
-                    className="p-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 rounded-lg border border-green-500/30 text-white transition-all duration-200 flex items-center space-x-2"
-                    whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(34, 197, 94, 0.3)' }}
+                    className="p-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 rounded-lg border border-green-500/30 transition-all duration-200 flex items-center space-x-2 text-[#2d2d2d]"
+                    whileHover={{
+                      scale: 1.05,
+                      boxShadow: "0 0 20px rgba(34, 197, 94, 0.3)",
+                    }}
                     whileTap={{ scale: 0.95 }}
                   >
                     <Wallet className="w-4 h-4" />
@@ -180,8 +195,10 @@ export const Header: React.FC = () => {
                   {/* Profile Dropdown */}
                   <div className="relative" ref={profileDropdownRef}>
                     <motion.button
-                      onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                      className="flex items-center space-x-2 p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
+                      onClick={() =>
+                        setIsProfileDropdownOpen(!isProfileDropdownOpen)
+                      }
+                      className="flex items-center space-x-2 p-2 rounded-lg hover:bg-white/10 transition-colors"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -189,13 +206,20 @@ export const Header: React.FC = () => {
                         <User className="w-4 h-4 text-white" />
                       </div>
                       <div className="flex flex-col items-start">
-                        <span className="text-sm font-medium">{user.name}</span>
-                        <span className="text-xs text-white/70">{user.email}</span>
+                        <span className="text-sm font-medium text-[#2d2d2d]">
+                          {user.name}
+                        </span>
+                        <span className="text-xs text-[#2d2d2d]/70">
+                          {user.email}
+                        </span>
                       </div>
-                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform duration-200 ${
+                          isProfileDropdownOpen ? "rotate-180" : ""
+                        } text-[#2d2d2d]`}
+                      />
                     </motion.button>
 
-                    {/* Profile Dropdown Menu */}
                     <AnimatePresence>
                       {isProfileDropdownOpen && (
                         <motion.div
@@ -210,13 +234,16 @@ export const Header: React.FC = () => {
                                 key={item.path}
                                 to={item.path}
                                 onClick={() => setIsProfileDropdownOpen(false)}
-                                className="flex items-center space-x-3 px-4 py-3 text-white/90 hover:text-white hover:bg-white/10 transition-colors group"
+                                className="flex items-center space-x-3 px-4 py-3 text-white/90 hover:text-yellow-400 hover:bg-white/10 transition-colors group"
                               >
                                 <item.icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                <span className="text-sm font-medium">{item.label}</span>
-                                {index === 0 && location.pathname === item.path && (
-                                  <div className="w-2 h-2 bg-yellow-400 rounded-full ml-auto" />
-                                )}
+                                <span className="text-sm font-medium">
+                                  {item.label}
+                                </span>
+                                {index === 0 &&
+                                  location.pathname === item.path && (
+                                    <div className="w-2 h-2 bg-yellow-400 rounded-full ml-auto" />
+                                  )}
                               </Link>
                             ))}
                             <hr className="border-white/20 my-2" />
@@ -228,7 +255,9 @@ export const Header: React.FC = () => {
                               className="flex items-center space-x-3 px-4 py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors group w-full text-left"
                             >
                               <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                              <span className="text-sm font-medium">Sign Out</span>
+                              <span className="text-sm font-medium">
+                                Sign Out
+                              </span>
                             </button>
                           </GlassmorphicCard>
                         </motion.div>
@@ -250,62 +279,65 @@ export const Header: React.FC = () => {
 
             {/* Mobile Menu Button */}
             <motion.button
-              className="md:hidden text-white"
+              className="md:hidden"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
+              style={{ color: "#2d2d2d" }}
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </motion.button>
           </motion.div>
 
           {/* Mobile Menu */}
           <AnimatePresence>
             {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="md:hidden py-4 border-t border-white/20"
-            >
-              <GlassmorphicCard className="space-y-4 p-4" opacity={0.1}>
-                <div>
-                  <Input
-                    placeholder="Search services, artisans, or jobs..."
-                    icon={<Search className="w-4 h-4" />}
-                    className="bg-transparent border-white/20 text-white placeholder-white/70"
-                  />
-                </div>
-                <nav className="space-y-2">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className="block text-white/90 hover:text-white py-2 px-2 rounded-lg hover:bg-white/10 transition-colors"
-                    >
-                      <motion.span
-                        whileHover={{ x: 4 }}
-                        className="block"
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="md:hidden py-4 border-t border-white/20 bg-[#9945FF]" //
+              >
+                <div className="space-y-4 p-4">
+                  <div>
+                    <Input
+                      placeholder="Search services, artisans, or jobs..."
+                      icon={<Search className="w-4 h-4" />}
+                      className="bg-transparent border-white/20 placeholder-white/70"
+                    />
+                  </div>
+                  <nav className="space-y-2">
+                    {navItems.map((item) => (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        className="block py-2 px-2 rounded-lg transition-colors hover:bg-white/10 hover:text-yellow-400"
+                        style={{ color: "#fff" }}
                       >
-                        {item.label}
-                      </motion.span>
-                    </Link>
-                  ))}
-                </nav>
-                <div className="pt-4 border-t border-white/20">
-                  {!isAuthenticated && (
-                    <NeonButton
-                      variant="accent"
-                      onClick={() => navigate('/auth')}
-                      className="w-full flex items-center justify-center space-x-2"
-                    >
-                      <User className="w-4 h-4" />
-                      <span>Sign Up</span>
-                    </NeonButton>
-                  )}
+                        <motion.span whileHover={{ x: 4 }} className="block">
+                          {item.label}
+                        </motion.span>
+                      </Link>
+                    ))}
+                  </nav>
+                  <div className="pt-4 border-t border-white/20">
+                    {!isAuthenticated && (
+                      <NeonButton
+                        variant="accent"
+                        onClick={() => navigate("/auth")}
+                        className="w-full flex items-center justify-center space-x-2"
+                      >
+                        <User className="w-4 h-4" />
+                        <span>Sign Up</span>
+                      </NeonButton>
+                    )}
+                  </div>
                 </div>
-              </GlassmorphicCard>
-            </motion.div>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>

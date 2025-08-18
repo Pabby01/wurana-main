@@ -207,7 +207,7 @@ export const PostJobPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Post a New Job
@@ -227,24 +227,30 @@ export const PostJobPage: React.FC = () => {
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         currentStep >= step.id
-                          ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white'
-                          : 'bg-gray-200 text-gray-600'
+                          ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+                          : "bg-gray-200 text-gray-600"
                       }`}
                     >
                       <step.icon className="w-5 h-5" />
                     </div>
                     <div className="ml-3">
-                      <p className={`font-medium ${
-                        currentStep >= step.id ? 'text-purple-600' : 'text-gray-600'
-                      }`}>
+                      <p
+                        className={`font-medium ${
+                          currentStep >= step.id
+                            ? "text-purple-600"
+                            : "text-gray-600"
+                        }`}
+                      >
                         {step.title}
                       </p>
                     </div>
                   </div>
                   {index < steps.length - 1 && (
-                    <div className={`flex-1 h-px mx-4 ${
-                      currentStep > step.id ? 'bg-purple-600' : 'bg-gray-300'
-                    }`} />
+                    <div
+                      className={`flex-1 h-px mx-4 ${
+                        currentStep > step.id ? "bg-purple-600" : "bg-gray-300"
+                      }`}
+                    />
                   )}
                 </React.Fragment>
               ))}
@@ -265,12 +271,17 @@ export const PostJobPage: React.FC = () => {
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
                   Basic Information
                 </h2>
-                
+
                 <div className="space-y-6">
                   <Input
                     label="Job Title"
                     value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
                     placeholder="e.g., Modern E-commerce Website Development"
                     required
                   />
@@ -281,7 +292,12 @@ export const PostJobPage: React.FC = () => {
                     </label>
                     <textarea
                       value={formData.description}
-                      onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
                       rows={6}
                       className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                       placeholder="Describe your project in detail, including specific requirements, deliverables, and expectations..."
@@ -296,17 +312,21 @@ export const PostJobPage: React.FC = () => {
                       </label>
                       <select
                         value={formData.category}
-                        onChange={(e) => setFormData(prev => ({ 
-                          ...prev, 
-                          category: e.target.value,
-                          subcategory: '' // Reset subcategory
-                        }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            category: e.target.value,
+                            subcategory: "", // Reset subcategory
+                          }))
+                        }
                         className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                         required
                       >
                         <option value="">Select category</option>
-                        {jobCategories.map(cat => (
-                          <option key={cat} value={cat}>{cat}</option>
+                        {jobCategories.map((cat) => (
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -317,14 +337,27 @@ export const PostJobPage: React.FC = () => {
                       </label>
                       <select
                         value={formData.subcategory}
-                        onChange={(e) => setFormData(prev => ({ ...prev, subcategory: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            subcategory: e.target.value,
+                          }))
+                        }
                         className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                        disabled={!formData.category || !subcategoriesByCategory[formData.category]}
+                        disabled={
+                          !formData.category ||
+                          !subcategoriesByCategory[formData.category]
+                        }
                       >
                         <option value="">Select subcategory</option>
-                        {formData.category && subcategoriesByCategory[formData.category]?.map(sub => (
-                          <option key={sub} value={sub}>{sub}</option>
-                        ))}
+                        {formData.category &&
+                          subcategoriesByCategory[formData.category]?.map(
+                            (sub) => (
+                              <option key={sub} value={sub}>
+                                {sub}
+                              </option>
+                            )
+                          )}
                       </select>
                     </div>
                   </div>
@@ -336,22 +369,32 @@ export const PostJobPage: React.FC = () => {
                       </label>
                       <div className="grid grid-cols-2 gap-2">
                         {Object.entries(priorityColors).map(([priority]) => {
-                          const IconComponent = priorityIcons[priority as keyof typeof priorityIcons];
+                          const IconComponent =
+                            priorityIcons[
+                              priority as keyof typeof priorityIcons
+                            ];
                           return (
                             <button
                               key={priority}
-                              onClick={() => setFormData(prev => ({ ...prev, priority: priority as JobFormData['priority'] }))}
+                              onClick={() =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  priority: priority as JobFormData["priority"],
+                                }))
+                              }
                               className={`p-3 rounded-lg border transition-all duration-200 ${
                                 formData.priority === priority
-                                  ? 'border-purple-500 bg-purple-50'
-                                  : 'border-gray-200 hover:border-gray-300'
+                                  ? "border-purple-500 bg-purple-50"
+                                  : "border-gray-200 hover:border-gray-300"
                               }`}
                               aria-label={`Set priority to ${priority}`}
                               title={`Set priority to ${priority}`}
                             >
                               <div className="flex items-center space-x-2">
                                 <IconComponent className="w-4 h-4" />
-                                <span className="font-medium capitalize">{priority}</span>
+                                <span className="font-medium capitalize">
+                                  {priority}
+                                </span>
                               </div>
                             </button>
                           );
@@ -365,22 +408,48 @@ export const PostJobPage: React.FC = () => {
                       </label>
                       <div className="space-y-2">
                         {[
-                          { value: 'public', label: 'Public', icon: Users, desc: 'Visible to all freelancers' },
-                          { value: 'private', label: 'Private', icon: Shield, desc: 'Only invited freelancers' },
-                          { value: 'invited_only', label: 'Invite Only', icon: Tag, desc: 'Handpicked freelancers' }
-                        ].map(option => (
-                          <label key={option.value} className="flex items-center space-x-3 cursor-pointer">
+                          {
+                            value: "public",
+                            label: "Public",
+                            icon: Users,
+                            desc: "Visible to all freelancers",
+                          },
+                          {
+                            value: "private",
+                            label: "Private",
+                            icon: Shield,
+                            desc: "Only invited freelancers",
+                          },
+                          {
+                            value: "invited_only",
+                            label: "Invite Only",
+                            icon: Tag,
+                            desc: "Handpicked freelancers",
+                          },
+                        ].map((option) => (
+                          <label
+                            key={option.value}
+                            className="flex items-center space-x-3 cursor-pointer"
+                          >
                             <input
                               type="radio"
                               value={option.value}
                               checked={formData.visibility === option.value}
-                              onChange={(e) => setFormData(prev => ({ ...prev, visibility: e.target.value as JobFormData['visibility'] }))}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  visibility: e.target
+                                    .value as JobFormData["visibility"],
+                                }))
+                              }
                               className="text-purple-600"
                             />
                             <option.icon className="w-4 h-4 text-gray-600" />
                             <div>
                               <div className="font-medium">{option.label}</div>
-                              <div className="text-sm text-gray-600">{option.desc}</div>
+                              <div className="text-sm text-gray-600">
+                                {option.desc}
+                              </div>
                             </div>
                           </label>
                         ))}
@@ -405,7 +474,9 @@ export const PostJobPage: React.FC = () => {
                       <label htmlFor="file-upload" className="cursor-pointer">
                         <div className="text-center">
                           <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                          <p className="text-gray-600">Click to upload files or drag and drop</p>
+                          <p className="text-gray-600">
+                            Click to upload files or drag and drop
+                          </p>
                           <p className="text-sm text-gray-500 mt-1">
                             PDF, DOC, images up to 10MB each
                           </p>
@@ -415,13 +486,18 @@ export const PostJobPage: React.FC = () => {
 
                     {attachments.length > 0 && (
                       <div className="mt-4 space-y-2">
-                        {attachments.map(attachment => (
-                          <div key={attachment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        {attachments.map((attachment) => (
+                          <div
+                            key={attachment.id}
+                            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                          >
                             <div className="flex items-center space-x-3">
                               <FileText className="w-5 h-5 text-gray-600" />
                               <div>
                                 <p className="font-medium">{attachment.name}</p>
-                                <p className="text-sm text-gray-600">{formatFileSize(attachment.size)}</p>
+                                <p className="text-sm text-gray-600">
+                                  {formatFileSize(attachment.size)}
+                                </p>
                               </div>
                             </div>
                             <button
@@ -466,32 +542,46 @@ export const PostJobPage: React.FC = () => {
                         <input
                           type="radio"
                           value="fixed"
-                          checked={formData.budget.type === 'fixed'}
-                          onChange={(e) => setFormData(prev => ({
-                            ...prev,
-                            budget: { ...prev.budget, type: e.target.value as 'fixed' | 'hourly' }
-                          }))}
+                          checked={formData.budget.type === "fixed"}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              budget: {
+                                ...prev.budget,
+                                type: e.target.value as "fixed" | "hourly",
+                              },
+                            }))
+                          }
                           className="text-purple-600"
                         />
                         <div>
                           <div className="font-medium">Fixed Price</div>
-                          <div className="text-sm text-gray-600">One-time payment for the entire project</div>
+                          <div className="text-sm text-gray-600">
+                            One-time payment for the entire project
+                          </div>
                         </div>
                       </label>
                       <label className="flex items-center space-x-3 cursor-pointer p-4 border rounded-lg hover:border-purple-500 transition-colors">
                         <input
                           type="radio"
                           value="hourly"
-                          checked={formData.budget.type === 'hourly'}
-                          onChange={(e) => setFormData(prev => ({
-                            ...prev,
-                            budget: { ...prev.budget, type: e.target.value as 'fixed' | 'hourly' }
-                          }))}
+                          checked={formData.budget.type === "hourly"}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              budget: {
+                                ...prev.budget,
+                                type: e.target.value as "fixed" | "hourly",
+                              },
+                            }))
+                          }
                           className="text-purple-600"
                         />
                         <div>
                           <div className="font-medium">Hourly Rate</div>
-                          <div className="text-sm text-gray-600">Pay based on time worked</div>
+                          <div className="text-sm text-gray-600">
+                            Pay based on time worked
+                          </div>
                         </div>
                       </label>
                     </div>
@@ -501,15 +591,23 @@ export const PostJobPage: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {formData.budget.type === 'hourly' ? 'Min Rate' : 'Min Budget'} *
+                        {formData.budget.type === "hourly"
+                          ? "Min Rate"
+                          : "Min Budget"}{" "}
+                        *
                       </label>
                       <Input
                         type="number"
                         value={formData.budget.min}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          budget: { ...prev.budget, min: parseFloat(e.target.value) || 0 }
-                        }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            budget: {
+                              ...prev.budget,
+                              min: parseFloat(e.target.value) || 0,
+                            },
+                          }))
+                        }
                         placeholder="0"
                         min="0"
                         step="0.1"
@@ -518,15 +616,23 @@ export const PostJobPage: React.FC = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {formData.budget.type === 'hourly' ? 'Max Rate' : 'Max Budget'} *
+                        {formData.budget.type === "hourly"
+                          ? "Max Rate"
+                          : "Max Budget"}{" "}
+                        *
                       </label>
                       <Input
                         type="number"
                         value={formData.budget.max}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          budget: { ...prev.budget, max: parseFloat(e.target.value) || 0 }
-                        }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            budget: {
+                              ...prev.budget,
+                              max: parseFloat(e.target.value) || 0,
+                            },
+                          }))
+                        }
                         placeholder="0"
                         min={formData.budget.min.toString()}
                         step="0.1"
@@ -539,10 +645,15 @@ export const PostJobPage: React.FC = () => {
                       </label>
                       <select
                         value={formData.budget.currency}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          budget: { ...prev.budget, currency: e.target.value as 'SOL' | 'USDC' }
-                        }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            budget: {
+                              ...prev.budget,
+                              currency: e.target.value as "SOL" | "USDC",
+                            },
+                          }))
+                        }
                         className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                         required
                       >
@@ -561,10 +672,15 @@ export const PostJobPage: React.FC = () => {
                       <Input
                         type="number"
                         value={formData.timeline.duration}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          timeline: { ...prev.timeline, duration: parseInt(e.target.value) || 1 }
-                        }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            timeline: {
+                              ...prev.timeline,
+                              duration: parseInt(e.target.value) || 1,
+                            },
+                          }))
+                        }
                         min="1"
                         required
                       />
@@ -575,10 +691,18 @@ export const PostJobPage: React.FC = () => {
                       </label>
                       <select
                         value={formData.timeline.unit}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          timeline: { ...prev.timeline, unit: e.target.value as 'days' | 'weeks' | 'months' }
-                        }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            timeline: {
+                              ...prev.timeline,
+                              unit: e.target.value as
+                                | "days"
+                                | "weeks"
+                                | "months",
+                            },
+                          }))
+                        }
                         className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                         required
                       >
@@ -595,11 +719,22 @@ export const PostJobPage: React.FC = () => {
                     </label>
                     <Input
                       type="datetime-local"
-                      value={formData.timeline.deadline?.toISOString().slice(0, 16) || ''}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        timeline: { ...prev.timeline, deadline: e.target.value ? new Date(e.target.value) : undefined }
-                      }))}
+                      value={
+                        formData.timeline.deadline
+                          ?.toISOString()
+                          .slice(0, 16) || ""
+                      }
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          timeline: {
+                            ...prev.timeline,
+                            deadline: e.target.value
+                              ? new Date(e.target.value)
+                              : undefined,
+                          },
+                        }))
+                      }
                     />
                   </div>
 
@@ -610,39 +745,67 @@ export const PostJobPage: React.FC = () => {
                     </label>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {[
-                        { value: 'remote', label: 'Remote', desc: 'Work from anywhere' },
-                        { value: 'onsite', label: 'On-site', desc: 'Work from specific location' },
-                        { value: 'hybrid', label: 'Hybrid', desc: 'Mix of remote and on-site' }
-                      ].map(option => (
-                        <label key={option.value} className="flex items-start space-x-3 cursor-pointer p-4 border rounded-lg hover:border-purple-500 transition-colors">
+                        {
+                          value: "remote",
+                          label: "Remote",
+                          desc: "Work from anywhere",
+                        },
+                        {
+                          value: "onsite",
+                          label: "On-site",
+                          desc: "Work from specific location",
+                        },
+                        {
+                          value: "hybrid",
+                          label: "Hybrid",
+                          desc: "Mix of remote and on-site",
+                        },
+                      ].map((option) => (
+                        <label
+                          key={option.value}
+                          className="flex items-start space-x-3 cursor-pointer p-4 border rounded-lg hover:border-purple-500 transition-colors"
+                        >
                           <input
                             type="radio"
                             value={option.value}
                             checked={formData.location.type === option.value}
-                            onChange={(e) => setFormData(prev => ({
-                              ...prev,
-                              location: { ...prev.location, type: e.target.value as JobFormData['location']['type'] }
-                            }))}
+                            onChange={(e) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                location: {
+                                  ...prev.location,
+                                  type: e.target
+                                    .value as JobFormData["location"]["type"],
+                                },
+                              }))
+                            }
                             className="mt-1 text-purple-600"
                           />
                           <div>
                             <div className="font-medium">{option.label}</div>
-                            <div className="text-sm text-gray-600">{option.desc}</div>
+                            <div className="text-sm text-gray-600">
+                              {option.desc}
+                            </div>
                           </div>
                         </label>
                       ))}
                     </div>
                   </div>
 
-                  {formData.location.type !== 'remote' && (
+                  {formData.location.type !== "remote" && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Input
                         label="City"
-                        value={formData.location.city || ''}
-                        onChange={(e) => setFormData(prev => ({
-                          ...prev,
-                          location: { ...prev.location, city: e.target.value }
-                        }))}
+                        value={formData.location.city || ""}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            location: {
+                              ...prev.location,
+                              city: e.target.value,
+                            },
+                          }))
+                        }
                         placeholder="e.g., San Francisco"
                       />
                       <div>
@@ -650,16 +813,23 @@ export const PostJobPage: React.FC = () => {
                           Country
                         </label>
                         <select
-                          value={formData.location.country || ''}
-                          onChange={(e) => setFormData(prev => ({
-                            ...prev,
-                            location: { ...prev.location, country: e.target.value }
-                          }))}
+                          value={formData.location.country || ""}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              location: {
+                                ...prev.location,
+                                country: e.target.value,
+                              },
+                            }))
+                          }
                           className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
                         >
                           <option value="">Select country</option>
-                          {countries.map(country => (
-                            <option key={country} value={country}>{country}</option>
+                          {countries.map((country) => (
+                            <option key={country} value={country}>
+                              {country}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -690,7 +860,7 @@ export const PostJobPage: React.FC = () => {
                       Required Skills
                     </label>
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {formData.skills.map(skill => (
+                      {formData.skills.map((skill) => (
                         <span
                           key={skill}
                           className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-700 border border-purple-200"
@@ -715,16 +885,21 @@ export const PostJobPage: React.FC = () => {
                           setNewSkill(e.target.value);
                           setShowSkillSuggestions(e.target.value.length > 0);
                         }}
-                        onKeyPress={(e) => e.key === 'Enter' && addSkill(newSkill)}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" && addSkill(newSkill)
+                        }
                       />
                       {showSkillSuggestions && newSkill && (
                         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
                           {skillsList
-                            .filter(skill =>
-                              skill.toLowerCase().includes(newSkill.toLowerCase()) &&
-                              !formData.skills.includes(skill)
+                            .filter(
+                              (skill) =>
+                                skill
+                                  .toLowerCase()
+                                  .includes(newSkill.toLowerCase()) &&
+                                !formData.skills.includes(skill)
                             )
-                            .map(skill => (
+                            .map((skill) => (
                               <button
                                 key={skill}
                                 onClick={() => addSkill(skill)}
@@ -745,7 +920,10 @@ export const PostJobPage: React.FC = () => {
                     </label>
                     <div className="space-y-2 mb-4">
                       {formData.requirements.map((req, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        >
                           <span>{req}</span>
                           <button
                             onClick={() => removeRequirement(req)}
@@ -763,7 +941,9 @@ export const PostJobPage: React.FC = () => {
                         placeholder="Add a project requirement..."
                         value={newRequirement}
                         onChange={(e) => setNewRequirement(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && addRequirement()}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" && addRequirement()
+                        }
                         className="flex-1"
                       />
                       <NeonButton
@@ -785,7 +965,10 @@ export const PostJobPage: React.FC = () => {
                     </label>
                     <div className="space-y-2 mb-4">
                       {formData.qualifications.map((qual, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        >
                           <span>{qual}</span>
                           <button
                             onClick={() => removeQualification(qual)}
@@ -803,7 +986,9 @@ export const PostJobPage: React.FC = () => {
                         placeholder="Add a preferred qualification..."
                         value={newQualification}
                         onChange={(e) => setNewQualification(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && addQualification()}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" && addQualification()
+                        }
                         className="flex-1"
                       />
                       <NeonButton
@@ -840,10 +1025,19 @@ export const PostJobPage: React.FC = () => {
                   <div className="border border-gray-200 rounded-lg p-4 bg-white">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{formData.title}</h3>
-                        <p className="text-gray-600">{formData.category} {formData.subcategory && `• ${formData.subcategory}`}</p>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {formData.title}
+                        </h3>
+                        <p className="text-gray-600">
+                          {formData.category}{" "}
+                          {formData.subcategory && `• ${formData.subcategory}`}
+                        </p>
                       </div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${priorityColors[formData.priority]}`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          priorityColors[formData.priority]
+                        }`}
+                      >
                         {formData.priority}
                       </span>
                     </div>
@@ -854,30 +1048,42 @@ export const PostJobPage: React.FC = () => {
                       <div className="flex items-center space-x-2">
                         <DollarSign className="w-4 h-4 text-gray-600" />
                         <span>
-                          {formData.budget.min}-{formData.budget.max} {formData.budget.currency}
-                          {formData.budget.type === 'hourly' ? '/hour' : ''}
+                          {formData.budget.min}-{formData.budget.max}{" "}
+                          {formData.budget.currency}
+                          {formData.budget.type === "hourly" ? "/hour" : ""}
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Calendar className="w-4 h-4 text-gray-600" />
-                        <span>{formData.timeline.duration} {formData.timeline.unit}</span>
+                        <span>
+                          {formData.timeline.duration} {formData.timeline.unit}
+                        </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <MapPin className="w-4 h-4 text-gray-600" />
-                        <span className="capitalize">{formData.location.type}</span>
+                        <span className="capitalize">
+                          {formData.location.type}
+                        </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Eye className="w-4 h-4 text-gray-600" />
-                        <span className="capitalize">{formData.visibility}</span>
+                        <span className="capitalize">
+                          {formData.visibility}
+                        </span>
                       </div>
                     </div>
 
                     {formData.skills.length > 0 && (
                       <div className="mb-4">
-                        <p className="font-medium text-gray-900 mb-2">Required Skills:</p>
+                        <p className="font-medium text-gray-900 mb-2">
+                          Required Skills:
+                        </p>
                         <div className="flex flex-wrap gap-2">
-                          {formData.skills.map(skill => (
-                            <span key={skill} className="px-2 py-1 bg-purple-100 text-purple-700 text-sm rounded">
+                          {formData.skills.map((skill) => (
+                            <span
+                              key={skill}
+                              className="px-2 py-1 bg-purple-100 text-purple-700 text-sm rounded"
+                            >
                               {skill}
                             </span>
                           ))}
@@ -887,7 +1093,9 @@ export const PostJobPage: React.FC = () => {
 
                     {formData.requirements.length > 0 && (
                       <div>
-                        <p className="font-medium text-gray-900 mb-2">Requirements:</p>
+                        <p className="font-medium text-gray-900 mb-2">
+                          Requirements:
+                        </p>
                         <ul className="list-disc list-inside text-gray-700 space-y-1">
                           {formData.requirements.map((req, index) => (
                             <li key={index}>{req}</li>
@@ -901,11 +1109,14 @@ export const PostJobPage: React.FC = () => {
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                     <div className="flex items-center space-x-2 mb-2">
                       <AlertCircle className="w-5 h-5 text-yellow-600" />
-                      <p className="font-medium text-yellow-800">Ready to publish?</p>
+                      <p className="font-medium text-yellow-800">
+                        Ready to publish?
+                      </p>
                     </div>
                     <p className="text-yellow-700 text-sm">
-                      Your job will be visible to freelancers based on your visibility settings. 
-                      You can edit or close the job at any time after publishing.
+                      Your job will be visible to freelancers based on your
+                      visibility settings. You can edit or close the job at any
+                      time after publishing.
                     </p>
                   </div>
                 </div>
@@ -920,7 +1131,7 @@ export const PostJobPage: React.FC = () => {
             variant="secondary"
             onClick={prevStep}
             disabled={currentStep === 1}
-            className={currentStep === 1 ? 'opacity-50 cursor-not-allowed' : ''}
+            className={currentStep === 1 ? "opacity-50 cursor-not-allowed" : ""}
           >
             Previous
           </NeonButton>
@@ -930,8 +1141,14 @@ export const PostJobPage: React.FC = () => {
               variant="primary"
               onClick={nextStep}
               disabled={
-                (currentStep === 1 && (!formData.title || !formData.description || !formData.category)) ||
-                (currentStep === 2 && (formData.budget.min <= 0 || formData.budget.max <= 0 || formData.budget.max < formData.budget.min))
+                (currentStep === 1 &&
+                  (!formData.title ||
+                    !formData.description ||
+                    !formData.category)) ||
+                (currentStep === 2 &&
+                  (formData.budget.min <= 0 ||
+                    formData.budget.max <= 0 ||
+                    formData.budget.max < formData.budget.min))
               }
             >
               Next
