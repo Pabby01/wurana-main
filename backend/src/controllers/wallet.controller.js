@@ -1,12 +1,12 @@
-const Wallet = require('../models/wallet.model');
-const Order = require('../models/order.model');
-const createError = require('http-errors');
-const { Connection, PublicKey, Transaction } = require('@solana/web3.js');
-const { Token } = require('@solana/spl-token');
+import Wallet from '../models/wallet.model';
+import Order from '../models/order.model';
+import createError from 'http-errors';
+import { Connection, PublicKey, Transaction } from '@solana/web3.js';
+import { Token } from '@solana/spl-token';
 
 const connection = new Connection(process.env.SOLANA_NETWORK);
 
-exports.getWallet = async (req, res, next) => {
+export const getWallet = async (req, res, next) => {
   try {
     const wallet = await Wallet.findOne({ user: req.user.id })
       .populate('escrowAccounts.order')
@@ -19,7 +19,7 @@ exports.getWallet = async (req, res, next) => {
   }
 };
 
-exports.createWallet = async (req, res, next) => {
+export const createWallet = async (req, res, next) => {
   try {
     const existingWallet = await Wallet.findOne({ user: req.user.id });
     if (existingWallet) throw createError(400, 'Wallet already exists');
@@ -36,7 +36,7 @@ exports.createWallet = async (req, res, next) => {
   }
 };
 
-exports.getTransactions = async (req, res, next) => {
+export const getTransactions = async (req, res, next) => {
   try {
     const {
       page = 1,
@@ -74,7 +74,7 @@ exports.getTransactions = async (req, res, next) => {
   }
 };
 
-exports.createEscrow = async (req, res, next) => {
+export const createEscrow = async (req, res, next) => {
   try {
     const { orderId, amount } = req.body;
     
@@ -119,7 +119,7 @@ exports.createEscrow = async (req, res, next) => {
   }
 };
 
-exports.releaseEscrow = async (req, res, next) => {
+export const releaseEscrow = async (req, res, next) => {
   try {
     const { orderId } = req.body;
     
@@ -165,7 +165,7 @@ exports.releaseEscrow = async (req, res, next) => {
   }
 };
 
-exports.refundEscrow = async (req, res, next) => {
+export const refundEscrow = async (req, res, next) => {
   try {
     const { orderId } = req.body;
     
@@ -212,7 +212,7 @@ exports.refundEscrow = async (req, res, next) => {
   }
 };
 
-exports.syncWallet = async (req, res, next) => {
+export const syncWallet = async (req, res, next) => {
   try {
     const wallet = await Wallet.findOne({ user: req.user.id });
     if (!wallet) throw createError(404, 'Wallet not found');
