@@ -228,18 +228,22 @@ export const Header: React.FC = () => {
                           exit={{ opacity: 0, y: -10, scale: 0.95 }}
                           className="absolute right-0 top-full mt-2 w-56 z-50"
                         >
-                          <GlassmorphicCard className="py-2" opacity={0.95}>
+                          <GlassmorphicCard
+                            className="relative py-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-lg 
+                            before:absolute before:inset-0 before:bg-gradient-to-b before:from-black/40 before:to-black/10 before:rounded-xl before:pointer-events-none"
+                          >
                             {profileMenuItems.map((item, index) => (
                               <Link
                                 key={item.path}
                                 to={item.path}
                                 onClick={() => setIsProfileDropdownOpen(false)}
-                                className="flex items-center space-x-3 px-4 py-3 text-white/90 hover:text-yellow-400 hover:bg-white/10 transition-colors group"
+                                className="flex items-center space-x-3 px-4 py-3 font-semibold text-orange-400 group-hover:text-yellow-300 hover:bg-white/10 transition-colors group"
                               >
                                 <item.icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
                                 <span className="text-sm font-medium">
                                   {item.label}
                                 </span>
+
                                 {index === 0 &&
                                   location.pathname === item.path && (
                                     <div className="w-2 h-2 bg-yellow-400 rounded-full ml-auto" />
