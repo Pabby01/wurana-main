@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Grid, List, Star, Clock, Bookmark, BookmarkCheck } from 'lucide-react';
-import { NeonButton } from '../ui/NeonButton';
-import { fetchGigs } from '../../services/api';
-import { clsx } from 'clsx';
-import { Card } from '../ui/Card';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Grid, List, Star, Clock, Bookmark, BookmarkCheck } from "lucide-react";
+import { NeonButton } from "../ui/NeonButton";
+import { fetchGigs } from "../../services/api";
+import { clsx } from "clsx";
+import { Card } from "../ui/Card";
 
 // Define Service interface to match the expected structure
 interface Service {
@@ -60,7 +60,7 @@ const convertGigToService = (gig: GigFromAPI): Service => ({
   title: gig.title,
   description: gig.description,
   price: gig.packages?.[0]?.price || 0,
-  currency: gig.packages?.[0]?.currency || 'SOL',
+  currency: gig.packages?.[0]?.currency || "SOL",
   rating: gig.rating,
   reviewCount: gig.reviewCount,
   seller: gig.seller,
@@ -69,42 +69,44 @@ const convertGigToService = (gig: GigFromAPI): Service => ({
   deliveryTime: gig.packages?.[0]?.deliveryTime || 0,
   category: gig.category,
   createdAt: gig.createdAt,
-  updatedAt: gig.updatedAt
+  updatedAt: gig.updatedAt,
 });
 
 interface ServiceGridProps {
   searchTerm?: string;
   selectedCategory?: string;
   priceRange?: [number, number];
-  sortBy?: 'price' | 'rating' | 'newest' | 'popular';
+  sortBy?: "price" | "rating" | "newest" | "popular";
 }
 
 // Map component sortBy values to API sortBy values
-const mapSortByToAPI = (sortBy: string): 'price' | 'rating' | 'deliveryTime' | 'createdAt' => {
+const mapSortByToAPI = (
+  sortBy: string
+): "price" | "rating" | "deliveryTime" | "createdAt" => {
   switch (sortBy) {
-    case 'newest':
-      return 'createdAt';
-    case 'popular':
-      return 'rating';
-    case 'price':
-      return 'price';
-    case 'rating':
-      return 'rating';
+    case "newest":
+      return "createdAt";
+    case "popular":
+      return "rating";
+    case "price":
+      return "price";
+    case "rating":
+      return "rating";
     default:
-      return 'createdAt';
+      return "createdAt";
   }
 };
 
 export const ServiceGrid: React.FC<ServiceGridProps> = ({
-  searchTerm = '',
-  selectedCategory = '',
+  searchTerm = "",
+  selectedCategory = "",
   priceRange,
-  sortBy = 'newest'
+  sortBy = "newest",
 }) => {
   const [gigs, setGigs] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [savedGigs, setSavedGigs] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -115,7 +117,7 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
       try {
         setLoading(true);
         setError(null);
-        
+
         const filters = {
           search: searchTerm,
           category: selectedCategory,
@@ -123,20 +125,19 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
           maxPrice: priceRange?.[1],
           sortBy: mapSortByToAPI(sortBy),
           page: currentPage,
-          limit: 12
+          limit: 12,
         };
 
         const response = await fetchGigs(filters);
-        
+
         // Extract the data from the API response and convert gigs to services
         const services = response.data.gigs.map(convertGigToService);
         setGigs(services);
         setTotalPages(response.data.totalPages);
         setTotal(response.data.total);
-        
       } catch (err) {
-        console.error('Error fetching gigs:', err);
-        setError('Failed to load services. Please try again.');
+        console.error("Error fetching gigs:", err);
+        setError("Failed to load services. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -146,9 +147,9 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
   }, [searchTerm, selectedCategory, priceRange, sortBy, currentPage]);
 
   const toggleSaveGig = (gigId: string) => {
-    setSavedGigs(prev => 
-      prev.includes(gigId) 
-        ? prev.filter(id => id !== gigId)
+    setSavedGigs((prev) =>
+      prev.includes(gigId)
+        ? prev.filter((id) => id !== gigId)
         : [...prev, gigId]
     );
   };
@@ -158,15 +159,15 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
   };
 
   const getDeliveryText = (days: number) => {
-    if (days === 1) return '1 day delivery';
+    if (days === 1) return "1 day delivery";
     if (days < 7) return `${days} days delivery`;
     const weeks = Math.floor(days / 7);
-    return `${weeks} week${weeks > 1 ? 's' : ''} delivery`;
+    return `${weeks} week${weeks > 1 ? "s" : ""} delivery`;
   };
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {Array.from({ length: 8 }).map((_, index) => (
           <Card key={index} className="animate-pulse">
             <div className="h-48 bg-gray-200 rounded-t-lg" />
@@ -187,12 +188,9 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
 
   if (error) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12 mt-16">
         <div className="text-red-600 mb-4">{error}</div>
-        <NeonButton 
-          onClick={() => window.location.reload()}
-          variant="primary"
-        >
+        <NeonButton onClick={() => window.location.reload()} variant="primary">
           Try Again
         </NeonButton>
       </div>
@@ -201,29 +199,31 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
 
   if (gigs.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="text-gray-500 mb-4">No services found matching your criteria.</div>
+      <div className="text-center py-12 mt-16">
+        <div className="text-gray-500 mb-4">
+          No services found matching your criteria.
+        </div>
         <p className="text-gray-400">Try adjusting your search or filters.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-16">
       {/* View Toggle and Results Count */}
       <div className="flex items-center justify-between">
         <div className="text-gray-600">
           Showing {gigs.length} of {total} services
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <button
-            onClick={() => setViewMode('grid')}
+            onClick={() => setViewMode("grid")}
             className={clsx(
-              'p-2 rounded-lg transition-colors',
-              viewMode === 'grid' 
-                ? 'bg-purple-100 text-purple-600' 
-                : 'text-gray-400 hover:text-gray-600'
+              "p-2 rounded-lg transition-colors",
+              viewMode === "grid"
+                ? "bg-purple-100 text-purple-600"
+                : "text-gray-400 hover:text-gray-600"
             )}
             aria-label="Grid view"
             title="Grid view"
@@ -231,12 +231,12 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
             <Grid className="w-5 h-5" />
           </button>
           <button
-            onClick={() => setViewMode('list')}
+            onClick={() => setViewMode("list")}
             className={clsx(
-              'p-2 rounded-lg transition-colors',
-              viewMode === 'list' 
-                ? 'bg-purple-100 text-purple-600' 
-                : 'text-gray-400 hover:text-gray-600'
+              "p-2 rounded-lg transition-colors",
+              viewMode === "list"
+                ? "bg-purple-100 text-purple-600"
+                : "text-gray-400 hover:text-gray-600"
             )}
             aria-label="List view"
             title="List view"
@@ -255,9 +255,9 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           className={clsx(
-            viewMode === 'grid' 
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-              : 'space-y-4'
+            viewMode === "grid"
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              : "space-y-4"
           )}
         >
           {gigs.map((service) => (
@@ -268,19 +268,21 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <Card 
+              <Card
                 className={clsx(
-                  'group hover:shadow-lg transition-all duration-300 cursor-pointer',
-                  viewMode === 'list' && 'flex flex-row'
+                  "group hover:shadow-lg transition-all duration-300 cursor-pointer",
+                  viewMode === "list" && "flex flex-row"
                 )}
                 hover
               >
                 {/* Service Image */}
-                <div className={clsx(
-                  'relative overflow-hidden',
-                  viewMode === 'grid' ? 'h-48' : 'w-48 h-32',
-                  viewMode === 'grid' ? 'rounded-t-lg' : 'rounded-l-lg'
-                )}>
+                <div
+                  className={clsx(
+                    "relative overflow-hidden",
+                    viewMode === "grid" ? "h-48" : "w-48 h-32",
+                    viewMode === "grid" ? "rounded-t-lg" : "rounded-l-lg"
+                  )}
+                >
                   {service.images.length > 0 ? (
                     <img
                       src={service.images[0]}
@@ -292,7 +294,7 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
                       <div className="text-purple-400 text-4xl">🎨</div>
                     </div>
                   )}
-                  
+
                   {/* Save Button */}
                   <button
                     onClick={(e) => {
@@ -300,8 +302,16 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
                       toggleSaveGig(service.id);
                     }}
                     className="absolute top-3 right-3 p-2 bg-white/90 rounded-full shadow-sm hover:bg-white transition-colors"
-                    aria-label={savedGigs.includes(service.id) ? 'Remove from saved' : 'Save service'}
-                    title={savedGigs.includes(service.id) ? 'Remove from saved' : 'Save service'}
+                    aria-label={
+                      savedGigs.includes(service.id)
+                        ? "Remove from saved"
+                        : "Save service"
+                    }
+                    title={
+                      savedGigs.includes(service.id)
+                        ? "Remove from saved"
+                        : "Save service"
+                    }
                   >
                     {savedGigs.includes(service.id) ? (
                       <BookmarkCheck className="w-4 h-4 text-purple-600" />
@@ -330,10 +340,14 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
                         </div>
                       )}
                     </div>
-                    <span className="text-sm text-gray-600">{service.seller.name}</span>
+                    <span className="text-sm text-gray-600">
+                      {service.seller.name}
+                    </span>
                     <div className="flex items-center space-x-1">
                       <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                      <span className="text-xs text-gray-600">{service.seller.rating}</span>
+                      <span className="text-xs text-gray-600">
+                        {service.seller.rating}
+                      </span>
                     </div>
                   </div>
 
@@ -396,12 +410,12 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
           <NeonButton
             variant="secondary"
             size="sm"
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
           >
             Previous
           </NeonButton>
-          
+
           <div className="flex items-center space-x-1">
             {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
               const page = i + 1;
@@ -410,10 +424,10 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
                   key={page}
                   onClick={() => setCurrentPage(page)}
                   className={clsx(
-                    'px-3 py-1 rounded-lg text-sm transition-colors',
+                    "px-3 py-1 rounded-lg text-sm transition-colors",
                     currentPage === page
-                      ? 'bg-purple-600 text-white'
-                      : 'text-gray-600 hover:bg-gray-100'
+                      ? "bg-purple-600 text-white"
+                      : "text-gray-600 hover:bg-gray-100"
                   )}
                 >
                   {page}
@@ -425,7 +439,9 @@ export const ServiceGrid: React.FC<ServiceGridProps> = ({
           <NeonButton
             variant="secondary"
             size="sm"
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
           >
             Next
