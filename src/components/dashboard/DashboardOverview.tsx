@@ -138,56 +138,43 @@ export const DashboardOverview: React.FC = () => {
   }) => (
     <motion.div variants={itemVariants}>
       <GlassmorphicCard
-        className="
-    p-6
-    bg-purple-900/50 
-    backdrop-blur-xl 
-    border border-purple-400/30 
-    rounded-2xl 
-    shadow-2xl 
-    relative
-    overflow-hidden
-  "
+        className="p-6 hover:shadow-2xl transition-all duration-300"
         hover
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-700/30 via-purple-800/20 to-indigo-900/30 rounded-2xl pointer-events-none" />
-
-        <div className="relative z-10">
-          {/* Top Row */}
-          <div className="flex items-center justify-between mb-4">
-            {/* Icon */}
-            <div className="p-3 rounded-lg bg-gradient-to-br from-purple-500/30 to-blue-500/30">
-              <Icon className="w-6 h-6 text-purple-300" strokeWidth={2.5} />
-            </div>
-
-            {/* Trend */}
-            <div
-              className={`flex items-center space-x-1 font-semibold ${
-                trend === "up" ? "text-green-400" : "text-red-400"
-              }`}
-            >
-              {trend === "up" ? (
-                <TrendingUp className="w-4 h-4" />
-              ) : (
-                <TrendingDown className="w-4 h-4" />
-              )}
-              <span className="text-sm">{change}%</span>
-            </div>
+        {/* Top Row */}
+        <div className="flex items-center justify-between mb-4">
+          {/* Icon */}
+          <div className="p-3 rounded-lg bg-gradient-to-br from-purple-500/30 to-blue-500/30">
+            <Icon className="w-6 h-6 text-purple-300" strokeWidth={2.5} />
           </div>
 
-          {/* Title */}
-          <h3 className="text-sm font-medium text-white/90">{title}</h3>
-
-          {/* Value */}
-          <p className="text-3xl font-extrabold text-white drop-shadow-sm">
-            {prefix}
-            {value.toLocaleString()}
-            {suffix}
-          </p>
-
-          {/* Subtext */}
-          <div className="mt-2 text-xs text-white/70">vs last month</div>
+          {/* Trend */}
+          <div
+            className={`flex items-center space-x-1 font-semibold ${
+              trend === "up" ? "text-green-400" : "text-red-400"
+            }`}
+          >
+            {trend === "up" ? (
+              <TrendingUp className="w-4 h-4" />
+            ) : (
+              <TrendingDown className="w-4 h-4" />
+            )}
+            <span className="text-sm">{change}%</span>
+          </div>
         </div>
+
+        {/* Title */}
+        <h3 className="text-sm font-medium text-white/90">{title}</h3>
+
+        {/* Value */}
+        <p className="text-3xl font-extrabold text-white drop-shadow-sm">
+          {prefix}
+          {value.toLocaleString()}
+          {suffix}
+        </p>
+
+        {/* Subtext */}
+        <div className="mt-2 text-xs text-white/70">vs last month</div>
       </GlassmorphicCard>
     </motion.div>
   );
