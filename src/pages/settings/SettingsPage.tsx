@@ -620,7 +620,6 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar */}
           <div className="lg:col-span-1">
             <Card className="sticky top-8">
               <div className="p-6">
