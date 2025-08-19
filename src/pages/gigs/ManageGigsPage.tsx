@@ -1,54 +1,54 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Plus, 
-  Search, 
-  MoreHorizontal, 
-  Eye, 
-  Edit, 
-  Pause, 
-  Play, 
-  Copy, 
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Plus,
+  Search,
+  MoreHorizontal,
+  Eye,
+  Edit,
+  Pause,
+  Play,
+  Copy,
   Trash2,
   TrendingUp,
   Star,
   MessageSquare,
   DollarSign,
   Users,
-  BarChart3
-} from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { NeonButton } from '../../components/ui/NeonButton';
-import { Input } from '../../components/ui/Input';
-import { GlassmorphicCard } from '../../components/ui/GlassmorphicCard';
-import { Gig } from '../../types/gig';
+  BarChart3,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { NeonButton } from "../../components/ui/NeonButton";
+import { Input } from "../../components/ui/Input";
+import { GlassmorphicCard } from "../../components/ui/GlassmorphicCard";
+import { Gig } from "../../types/gig";
 
 // Mock data for demonstration
 const MOCK_GIGS: Gig[] = [
   {
-    id: '1',
-    userId: 'user1',
-    title: 'I will create a modern logo design for your business',
-    description: 'Professional logo design with unlimited revisions...',
-    category: 'graphics-design',
-    subcategory: 'Logo Design',
-    tags: ['logo', 'branding', 'design'],
+    id: "1",
+    userId: "user1",
+    title: "I will create a modern logo design for your business",
+    description: "Professional logo design with unlimited revisions...",
+    category: "graphics-design",
+    subcategory: "Logo Design",
+    tags: ["logo", "branding", "design"],
     images: [],
-    status: 'active',
+    status: "active",
     packages: [
       {
-        id: 'pkg1',
-        name: 'basic',
-        type: 'basic',
-        title: 'Basic Logo',
-        description: 'Simple logo design',
+        id: "pkg1",
+        name: "basic",
+        type: "basic",
+        title: "Basic Logo",
+        description: "Simple logo design",
         price: 0.1,
-        currency: 'SOL',
+        currency: "SOL",
         deliveryTime: 3,
         revisions: 2,
-        features: ['Logo design', '2 revisions'],
-        isActive: true
-      }
+        features: ["Logo design", "2 revisions"],
+        isActive: true,
+      },
     ],
     extras: [],
     faq: [],
@@ -61,33 +61,33 @@ const MOCK_GIGS: Gig[] = [
     impressions: 12450,
     clicks: 890,
     conversionRate: 7.2,
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-20')
+    createdAt: new Date("2024-01-15"),
+    updatedAt: new Date("2024-01-20"),
   },
   {
-    id: '2',
-    userId: 'user1',
-    title: 'I will develop a responsive website using React',
-    description: 'Modern, fast, and responsive web development...',
-    category: 'programming-tech',
-    subcategory: 'Web Development',
-    tags: ['react', 'website', 'frontend'],
+    id: "2",
+    userId: "user1",
+    title: "I will develop a responsive website using React",
+    description: "Modern, fast, and responsive web development...",
+    category: "programming-tech",
+    subcategory: "Web Development",
+    tags: ["react", "website", "frontend"],
     images: [],
-    status: 'active',
+    status: "active",
     packages: [
       {
-        id: 'pkg2',
-        name: 'basic',
-        type: 'basic',
-        title: 'Landing Page',
-        description: 'Single page website',
+        id: "pkg2",
+        name: "basic",
+        type: "basic",
+        title: "Landing Page",
+        description: "Single page website",
         price: 2.5,
-        currency: 'SOL',
+        currency: "SOL",
         deliveryTime: 7,
         revisions: 3,
-        features: ['Responsive design', 'Modern UI'],
-        isActive: true
-      }
+        features: ["Responsive design", "Modern UI"],
+        isActive: true,
+      },
     ],
     extras: [],
     faq: [],
@@ -100,33 +100,33 @@ const MOCK_GIGS: Gig[] = [
     impressions: 8930,
     clicks: 567,
     conversionRate: 6.3,
-    createdAt: new Date('2024-02-01'),
-    updatedAt: new Date('2024-02-10')
+    createdAt: new Date("2024-02-01"),
+    updatedAt: new Date("2024-02-10"),
   },
   {
-    id: '3',
-    userId: 'user1',
-    title: 'I will write engaging blog content for your website',
-    description: 'SEO-optimized blog posts and articles...',
-    category: 'writing-translation',
-    subcategory: 'Content Writing',
-    tags: ['writing', 'blog', 'seo'],
+    id: "3",
+    userId: "user1",
+    title: "I will write engaging blog content for your website",
+    description: "SEO-optimized blog posts and articles...",
+    category: "writing-translation",
+    subcategory: "Content Writing",
+    tags: ["writing", "blog", "seo"],
     images: [],
-    status: 'paused',
+    status: "paused",
     packages: [
       {
-        id: 'pkg3',
-        name: 'basic',
-        type: 'basic',
-        title: 'Blog Post',
-        description: '500-word blog post',
+        id: "pkg3",
+        name: "basic",
+        type: "basic",
+        title: "Blog Post",
+        description: "500-word blog post",
         price: 0.05,
-        currency: 'SOL',
+        currency: "SOL",
         deliveryTime: 2,
         revisions: 1,
-        features: ['SEO optimized', 'Engaging content'],
-        isActive: true
-      }
+        features: ["SEO optimized", "Engaging content"],
+        isActive: true,
+      },
     ],
     extras: [],
     faq: [],
@@ -139,121 +139,136 @@ const MOCK_GIGS: Gig[] = [
     impressions: 15670,
     clicks: 1234,
     conversionRate: 7.9,
-    createdAt: new Date('2024-01-10'),
-    updatedAt: new Date('2024-02-15')
-  }
+    createdAt: new Date("2024-01-10"),
+    updatedAt: new Date("2024-02-15"),
+  },
 ];
 
 const FILTER_OPTIONS = [
-  { value: 'all', label: 'All Gigs' },
-  { value: 'active', label: 'Active' },
-  { value: 'paused', label: 'Paused' },
-  { value: 'draft', label: 'Draft' }
+  { value: "all", label: "All Gigs" },
+  { value: "active", label: "Active" },
+  { value: "paused", label: "Paused" },
+  { value: "draft", label: "Draft" },
 ];
 
 const SORT_OPTIONS = [
-  { value: 'recent', label: 'Most Recent' },
-  { value: 'orders', label: 'Most Orders' },
-  { value: 'earnings', label: 'Highest Earnings' },
-  { value: 'rating', label: 'Highest Rating' }
+  { value: "recent", label: "Most Recent" },
+  { value: "orders", label: "Most Orders" },
+  { value: "earnings", label: "Highest Earnings" },
+  { value: "rating", label: "Highest Rating" },
 ];
 
 export const ManageGigsPage: React.FC = () => {
   const navigate = useNavigate();
   const [gigs, setGigs] = useState<Gig[]>(MOCK_GIGS);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('recent');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("recent");
   const [showDropdownId, setShowDropdownId] = useState<string | null>(null);
 
   // Filter and sort gigs
   const filteredGigs = gigs
-    .filter(gig => {
-      const matchesSearch = gig.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           gig.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesStatus = statusFilter === 'all' || gig.status === statusFilter;
+    .filter((gig) => {
+      const matchesSearch =
+        gig.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        gig.tags.some((tag) =>
+          tag.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      const matchesStatus =
+        statusFilter === "all" || gig.status === statusFilter;
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
       switch (sortBy) {
-        case 'orders':
+        case "orders":
           return b.totalOrders - a.totalOrders;
-        case 'earnings':
+        case "earnings":
           return b.totalEarnings - a.totalEarnings;
-        case 'rating':
+        case "rating":
           return b.rating - a.rating;
-        case 'recent':
+        case "recent":
         default:
-          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+          return (
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          );
       }
     });
 
   const handleToggleStatus = (gigId: string) => {
-    setGigs(prev => prev.map(gig => 
-      gig.id === gigId 
-        ? { ...gig, status: gig.status === 'active' ? 'paused' : 'active' } 
-        : gig
-    ));
+    setGigs((prev) =>
+      prev.map((gig) =>
+        gig.id === gigId
+          ? { ...gig, status: gig.status === "active" ? "paused" : "active" }
+          : gig
+      )
+    );
   };
 
   const handleDuplicate = (gigId: string) => {
-    const originalGig = gigs.find(gig => gig.id === gigId);
+    const originalGig = gigs.find((gig) => gig.id === gigId);
     if (originalGig) {
       const newGig: Gig = {
         ...originalGig,
         id: `${originalGig.id}-copy-${Date.now()}`,
         title: `${originalGig.title} (Copy)`,
-        status: 'draft',
+        status: "draft",
         totalOrders: 0,
         totalEarnings: 0,
         impressions: 0,
         clicks: 0,
         conversionRate: 0,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      setGigs(prev => [newGig, ...prev]);
+      setGigs((prev) => [newGig, ...prev]);
     }
     setShowDropdownId(null);
   };
 
   const handleDelete = (gigId: string) => {
-    if (window.confirm('Are you sure you want to delete this gig?')) {
-      setGigs(prev => prev.filter(gig => gig.id !== gigId));
+    if (window.confirm("Are you sure you want to delete this gig?")) {
+      setGigs((prev) => prev.filter((gig) => gig.id !== gigId));
     }
     setShowDropdownId(null);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'text-green-400 bg-green-500/20 border-green-500/30';
-      case 'paused':
-        return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30';
-      case 'draft':
-        return 'text-gray-400 bg-gray-500/20 border-gray-500/30';
+      case "active":
+        return "text-green-400 bg-green-500/20 border-green-500/30";
+      case "paused":
+        return "text-yellow-400 bg-yellow-500/20 border-yellow-500/30";
+      case "draft":
+        return "text-gray-400 bg-gray-500/20 border-gray-500/30";
       default:
-        return 'text-gray-400 bg-gray-500/20 border-gray-500/30';
+        return "text-gray-400 bg-gray-500/20 border-gray-500/30";
     }
   };
 
   const totalEarnings = gigs.reduce((sum, gig) => sum + gig.totalEarnings, 0);
   const totalOrders = gigs.reduce((sum, gig) => sum + gig.totalOrders, 0);
-  const activeGigs = gigs.filter(gig => gig.status === 'active').length;
-  const avgRating = gigs.length > 0 ? gigs.reduce((sum, gig) => sum + gig.rating, 0) / gigs.length : 0;
+  const activeGigs = gigs.filter((gig) => gig.status === "active").length;
+  const avgRating =
+    gigs.length > 0
+      ? gigs.reduce((sum, gig) => sum + gig.rating, 0) / gigs.length
+      : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-8">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 mt-16">
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Manage Your Gigs</h1>
-            <p className="text-white/70">Monitor performance and manage your services</p>
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Manage Your Gigs
+            </h1>
+            <p className="text-white/70">
+              Monitor performance and manage your services
+            </p>
           </div>
           <div className="mt-4 lg:mt-0">
             <NeonButton
-              onClick={() => navigate('/gigs/create')}
+              onClick={() => navigate("/gigs/create")}
               variant="accent"
               className="flex items-center gap-2"
             >
@@ -269,7 +284,9 @@ export const ManageGigsPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-white/70 text-sm">Total Earnings</p>
-                <p className="text-2xl font-bold text-white">{totalEarnings.toFixed(2)} SOL</p>
+                <p className="text-2xl font-bold text-white">
+                  {totalEarnings.toFixed(2)} SOL
+                </p>
               </div>
               <div className="p-3 bg-green-500/20 rounded-lg">
                 <DollarSign className="w-6 h-6 text-green-400" />
@@ -308,7 +325,9 @@ export const ManageGigsPage: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center mt-2">
-              <span className="text-white/70 text-sm">of {gigs.length} total</span>
+              <span className="text-white/70 text-sm">
+                of {gigs.length} total
+              </span>
             </div>
           </GlassmorphicCard>
 
@@ -316,7 +335,9 @@ export const ManageGigsPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-white/70 text-sm">Average Rating</p>
-                <p className="text-2xl font-bold text-white">{avgRating.toFixed(1)}</p>
+                <p className="text-2xl font-bold text-white">
+                  {avgRating.toFixed(1)}
+                </p>
               </div>
               <div className="p-3 bg-yellow-500/20 rounded-lg">
                 <Star className="w-6 h-6 text-yellow-400" />
@@ -341,15 +362,19 @@ export const ManageGigsPage: React.FC = () => {
                 className="bg-white/10 border-white/20 text-white placeholder-white/60"
               />
             </div>
-            
+
             <div className="flex gap-4">
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:border-purple-500"
               >
-                {FILTER_OPTIONS.map(option => (
-                  <option key={option.value} value={option.value} className="text-gray-900">
+                {FILTER_OPTIONS.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    className="text-gray-900"
+                  >
                     {option.label}
                   </option>
                 ))}
@@ -360,8 +385,12 @@ export const ManageGigsPage: React.FC = () => {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:border-purple-500"
               >
-                {SORT_OPTIONS.map(option => (
-                  <option key={option.value} value={option.value} className="text-gray-900">
+                {SORT_OPTIONS.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    className="text-gray-900"
+                  >
                     {option.label}
                   </option>
                 ))}
@@ -388,10 +417,14 @@ export const ManageGigsPage: React.FC = () => {
                       <p className="text-sm opacity-75">No image uploaded</p>
                     </div>
                   </div>
-                  
+
                   {/* Status Badge */}
                   <div className="absolute top-3 left-3">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(gig.status)}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                        gig.status
+                      )}`}
+                    >
                       {gig.status.charAt(0).toUpperCase() + gig.status.slice(1)}
                     </span>
                   </div>
@@ -399,14 +432,18 @@ export const ManageGigsPage: React.FC = () => {
                   {/* Actions Dropdown */}
                   <div className="absolute top-3 right-3">
                     <button
-                      onClick={() => setShowDropdownId(showDropdownId === gig.id ? null : gig.id)}
+                      onClick={() =>
+                        setShowDropdownId(
+                          showDropdownId === gig.id ? null : gig.id
+                        )
+                      }
                       className="p-2 bg-black/30 rounded-full text-white hover:bg-black/50 transition-colors"
                       aria-label="More options"
                       title="More options"
                     >
                       <MoreHorizontal className="w-4 h-4" />
                     </button>
-                    
+
                     {showDropdownId === gig.id && (
                       <motion.div
                         initial={{ opacity: 0, y: -10 }}
@@ -433,7 +470,7 @@ export const ManageGigsPage: React.FC = () => {
                           onClick={() => handleToggleStatus(gig.id)}
                           className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-50"
                         >
-                          {gig.status === 'active' ? (
+                          {gig.status === "active" ? (
                             <>
                               <Pause className="w-4 h-4 mr-2" />
                               Pause
@@ -472,7 +509,13 @@ export const ManageGigsPage: React.FC = () => {
                       {gig.title}
                     </h3>
                     <p className="text-white/70 text-sm">
-                      {gig.category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')} › {gig.subcategory}
+                      {gig.category
+                        .split("-")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")}{" "}
+                      › {gig.subcategory}
                     </p>
                   </div>
 
@@ -497,22 +540,30 @@ export const ManageGigsPage: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
                       <p className="text-white/70 text-xs">Orders</p>
-                      <p className="text-white font-semibold">{gig.totalOrders}</p>
+                      <p className="text-white font-semibold">
+                        {gig.totalOrders}
+                      </p>
                     </div>
                     <div>
                       <p className="text-white/70 text-xs">Earnings</p>
-                      <p className="text-white font-semibold">{gig.totalEarnings.toFixed(2)} SOL</p>
+                      <p className="text-white font-semibold">
+                        {gig.totalEarnings.toFixed(2)} SOL
+                      </p>
                     </div>
                     <div>
                       <p className="text-white/70 text-xs">Rating</p>
                       <div className="flex items-center">
                         <Star className="w-3 h-3 text-yellow-400 fill-current mr-1" />
-                        <span className="text-white font-semibold">{gig.rating}</span>
+                        <span className="text-white font-semibold">
+                          {gig.rating}
+                        </span>
                       </div>
                     </div>
                     <div>
                       <p className="text-white/70 text-xs">Views</p>
-                      <p className="text-white font-semibold">{gig.impressions.toLocaleString()}</p>
+                      <p className="text-white font-semibold">
+                        {gig.impressions.toLocaleString()}
+                      </p>
                     </div>
                   </div>
 
@@ -521,10 +572,11 @@ export const ManageGigsPage: React.FC = () => {
                     <div>
                       <p className="text-white/70 text-xs">Starting at</p>
                       <p className="text-white font-bold">
-                        {Math.min(...gig.packages.map(pkg => pkg.price))} {gig.packages[0]?.currency}
+                        {Math.min(...gig.packages.map((pkg) => pkg.price))}{" "}
+                        {gig.packages[0]?.currency}
                       </p>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                       <Link
                         to={`/gigs/${gig.id}/orders`}
@@ -559,15 +611,17 @@ export const ManageGigsPage: React.FC = () => {
           >
             <GlassmorphicCard className="p-8 max-w-md mx-auto">
               <div className="text-6xl mb-4">🎯</div>
-              <h3 className="text-xl font-semibold text-white mb-2">No gigs found</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                No gigs found
+              </h3>
               <p className="text-white/70 mb-6">
-                {searchTerm || statusFilter !== 'all'
-                  ? 'Try adjusting your search or filters'
-                  : 'Create your first gig to start earning'}
+                {searchTerm || statusFilter !== "all"
+                  ? "Try adjusting your search or filters"
+                  : "Create your first gig to start earning"}
               </p>
-              {(!searchTerm && statusFilter === 'all') && (
+              {!searchTerm && statusFilter === "all" && (
                 <NeonButton
-                  onClick={() => navigate('/gigs/create')}
+                  onClick={() => navigate("/gigs/create")}
                   variant="accent"
                 >
                   Create Your First Gig
