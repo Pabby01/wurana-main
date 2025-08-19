@@ -16,7 +16,6 @@ import {
   FileText,
 } from "lucide-react";
 import { NeonButton } from "../ui/NeonButton";
-import { GlassmorphicCard } from "../ui/GlassmorphicCard";
 import { Input } from "../ui/Input";
 import { useScrollPosition } from "../../hooks/useScrollPosition";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -67,7 +66,6 @@ export const Header: React.FC = () => {
     { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
-  const headerOpacity = Math.min(scrollPosition / 100, 0.95);
   const headerScale = Math.max(1 - scrollPosition / 2000, 0.95);
   const shouldShrink = scrollPosition > 50;
 
@@ -81,16 +79,14 @@ export const Header: React.FC = () => {
   return (
     <>
       <motion.header
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-purple-900"
         style={{
-          background: `rgba(153, 69, 255, ${0.05 + headerOpacity * 0.9})`,
           backdropFilter: `blur(${8 + scrollPosition / 10}px)`,
           WebkitBackdropFilter: `blur(${8 + scrollPosition / 10}px)`,
           borderRadius: shouldShrink ? "0 0 1.5rem 1.5rem" : "0",
           boxShadow: shouldShrink
-            ? "0 4px 20px rgba(153, 69, 255, 0.2)"
+            ? "0 4px 20px rgba(153, 69, 255, 0.4)"
             : "none",
-          color: "#2d2d2d",
         }}
         animate={{
           scale: headerScale,
@@ -99,7 +95,7 @@ export const Header: React.FC = () => {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            className="flex items-center justify-between transition-all duration-300"
+            className="flex items-center justify-between transition-all duration-300 text-white"
             animate={{ height: shouldShrink ? "60px" : "64px" }}
           >
             {/* Logo */}
@@ -128,7 +124,7 @@ export const Header: React.FC = () => {
                     transition={{ duration: 0.6 }}
                   />
                 </motion.div>
-                <span className="font-bold text-xl text-[#2d2d2d] group-hover:text-yellow-400 transition-colors">
+                <span className="font-bold text-xl text-white group-hover:text-yellow-400 transition-colors">
                   Wurana
                 </span>
               </motion.div>
@@ -143,7 +139,7 @@ export const Header: React.FC = () => {
                   className={`transition-colors relative ${
                     location.pathname === item.path
                       ? "text-yellow-400"
-                      : "text-[#2d2d2d] hover:text-yellow-400"
+                      : "text-white hover:text-yellow-400"
                   }`}
                 >
                   {item.label}
@@ -181,7 +177,7 @@ export const Header: React.FC = () => {
                 >
                   <motion.button
                     onClick={handleWalletClick}
-                    className="p-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 rounded-lg border border-green-500/30 transition-all duration-200 flex items-center space-x-2 text-[#2d2d2d]"
+                    className="p-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 rounded-lg border border-green-500/30 transition-all duration-200 flex items-center space-x-2 text-white"
                     whileHover={{
                       scale: 1.05,
                       boxShadow: "0 0 20px rgba(34, 197, 94, 0.3)",
@@ -206,17 +202,17 @@ export const Header: React.FC = () => {
                         <User className="w-4 h-4 text-white" />
                       </div>
                       <div className="flex flex-col items-start">
-                        <span className="text-sm font-medium text-[#2d2d2d]">
+                        <span className="text-sm font-medium text-white">
                           {user.name}
                         </span>
-                        <span className="text-xs text-[#2d2d2d]/70">
+                        <span className="text-xs text-purple-200">
                           {user.email}
                         </span>
                       </div>
                       <ChevronDown
                         className={`w-4 h-4 transition-transform duration-200 ${
                           isProfileDropdownOpen ? "rotate-180" : ""
-                        } text-[#2d2d2d]`}
+                        } text-white`}
                       />
                     </motion.button>
 
@@ -228,10 +224,9 @@ export const Header: React.FC = () => {
                           exit={{ opacity: 0, y: -10, scale: 0.95 }}
                           className="absolute right-0 top-full mt-2 w-56 z-50"
                         >
-                          <GlassmorphicCard
+                          <div
                             className="relative py-2 
-    bg-purple-950/90 backdrop-blur-xl border border-purple-700/40 rounded-xl shadow-2xl
-    before:absolute before:inset-0 before:bg-gradient-to-b before:from-purple-900/80 before:to-purple-950/80 before:rounded-xl before:pointer-events-none"
+    bg-purple-900 border border-purple-700 rounded-xl shadow-xl"
                           >
                             {profileMenuItems.map((item, index) => (
                               <Link
@@ -239,7 +234,7 @@ export const Header: React.FC = () => {
                                 to={item.path}
                                 onClick={() => setIsProfileDropdownOpen(false)}
                                 className="flex items-center space-x-3 px-4 py-3 
-        font-semibold text-white hover:text-purple-200 hover:bg-purple-800/50 
+        font-semibold text-white hover:text-purple-200 hover:bg-purple-800/60 
         transition-colors rounded-lg"
                               >
                                 <item.icon className="w-4 h-4 text-white group-hover:text-purple-200 group-hover:scale-110 transition-transform" />
@@ -252,7 +247,7 @@ export const Header: React.FC = () => {
                               </Link>
                             ))}
 
-                            <hr className="border-purple-700/40 my-2" />
+                            <hr className="border-purple-700 my-2" />
 
                             <button
                               onClick={() => {
@@ -266,7 +261,7 @@ export const Header: React.FC = () => {
                               <LogOut className="w-4 h-4 text-red-400 group-hover:text-red-300 group-hover:scale-110 transition-transform" />
                               <span className="text-base">Sign Out</span>
                             </button>
-                          </GlassmorphicCard>
+                          </div>
                         </motion.div>
                       )}
                     </AnimatePresence>

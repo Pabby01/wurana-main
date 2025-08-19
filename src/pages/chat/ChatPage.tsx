@@ -167,26 +167,34 @@ export const ChatPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 mt-16 sm:px-6 lg:px-8">
         <div className="mb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Messages</h1>
-              <p className="text-gray-600">Stay connected with your clients and projects</p>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                Messages
+              </h1>
+              <p className="text-gray-600">
+                Stay connected with your clients and projects
+              </p>
             </div>
             <div className="flex items-center space-x-2">
               <NeonButton
                 variant="secondary"
                 size="sm"
                 onClick={() => setIsMinimized(!isMinimized)}
-                aria-label={isMinimized ? 'Expand chat window' : 'Minimize chat window'}
-                title={isMinimized ? 'Expand chat window' : 'Minimize chat window'}
+                aria-label={
+                  isMinimized ? "Expand chat window" : "Minimize chat window"
+                }
+                title={
+                  isMinimized ? "Expand chat window" : "Minimize chat window"
+                }
               >
                 <Minimize2 className="w-4 h-4" />
-                {isMinimized ? 'Expand' : 'Minimize'}
+                {isMinimized ? "Expand" : "Minimize"}
               </NeonButton>
-              <NeonButton 
-                variant="primary" 
+              <NeonButton
+                variant="primary"
                 size="sm"
                 aria-label="Start new chat"
                 title="Start new chat"
@@ -198,13 +206,19 @@ export const ChatPage: React.FC = () => {
           </div>
         </div>
 
-        <div className={`transition-all duration-300 ${isMinimized ? 'h-20' : 'h-[800px]'}`}>
+        <div
+          className={`transition-all duration-300 ${
+            isMinimized ? "h-20" : "h-[800px]"
+          }`}
+        >
           <GlassmorphicCard className="h-full" opacity={0.2}>
             {isMinimized ? (
               <div className="h-full flex items-center justify-center">
                 <div className="flex items-center space-x-4">
                   <MessageCircle className="w-6 h-6 text-purple-600" />
-                  <span className="text-gray-600">Chat minimized - Click expand to continue</span>
+                  <span className="text-gray-600">
+                    Chat minimized - Click expand to continue
+                  </span>
                   <div className="flex -space-x-2">
                     {conversations.slice(0, 3).map((conv) => (
                       <div
@@ -212,10 +226,18 @@ export const ChatPage: React.FC = () => {
                         className="relative w-8 h-8 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full border-2 border-white flex items-center justify-center overflow-hidden"
                       >
                         {conv.metadata?.avatar ? (
-                          <img src={conv.metadata.avatar} alt="" className="w-full h-full object-cover" />
+                          <img
+                            src={conv.metadata.avatar}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
                           <span className="text-white text-xs font-semibold">
-                            {getUserDisplayName(conv.participants.find(p => p !== 'current-user') || '').charAt(0)}
+                            {getUserDisplayName(
+                              conv.participants.find(
+                                (p) => p !== "current-user"
+                              ) || ""
+                            ).charAt(0)}
                           </span>
                         )}
                         {conv.unreadCount > 0 && (
@@ -251,11 +273,13 @@ export const ChatPage: React.FC = () => {
                     {filteredConversations.map((conversation) => (
                       <motion.div
                         key={conversation.id}
-                        whileHover={{ backgroundColor: 'rgba(147, 51, 234, 0.05)' }}
+                        whileHover={{
+                          backgroundColor: "rgba(147, 51, 234, 0.05)",
+                        }}
                         className={`p-4 border-b border-gray-100 cursor-pointer transition-colors ${
                           selectedConversation?.id === conversation.id
-                            ? 'bg-purple-50 border-l-4 border-l-purple-500'
-                            : ''
+                            ? "bg-purple-50 border-l-4 border-l-purple-500"
+                            : ""
                         }`}
                         onClick={() => setSelectedConversation(conversation)}
                       >
@@ -270,11 +294,19 @@ export const ChatPage: React.FC = () => {
                                 />
                               ) : (
                                 <span className="text-white font-semibold">
-                                  {getUserDisplayName(conversation.participants.find(p => p !== 'current-user') || '').charAt(0)}
+                                  {getUserDisplayName(
+                                    conversation.participants.find(
+                                      (p) => p !== "current-user"
+                                    ) || ""
+                                  ).charAt(0)}
                                 </span>
                               )}
                             </div>
-                            {isUserOnline(conversation.participants.find(p => p !== 'current-user') || '') && (
+                            {isUserOnline(
+                              conversation.participants.find(
+                                (p) => p !== "current-user"
+                              ) || ""
+                            ) && (
                               <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
                             )}
                           </div>
@@ -283,7 +315,12 @@ export const ChatPage: React.FC = () => {
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-2">
                                 <h3 className="font-semibold text-gray-900 truncate">
-                                  {conversation.title || getUserDisplayName(conversation.participants.find(p => p !== 'current-user') || '')}
+                                  {conversation.title ||
+                                    getUserDisplayName(
+                                      conversation.participants.find(
+                                        (p) => p !== "current-user"
+                                      ) || ""
+                                    )}
                                 </h3>
                                 {conversation.isPinned && (
                                   <Pin className="w-3 h-3 text-purple-600" />
@@ -303,24 +340,31 @@ export const ChatPage: React.FC = () => {
 
                             {conversation.lastMessage && (
                               <p className="text-sm text-gray-600 truncate mt-1">
-                                {conversation.lastMessage.senderId === 'current-user' ? 'You: ' : ''}
-                                {conversation.lastMessage.type === 'image' ? '📷 Image' :
-                                 conversation.lastMessage.type === 'file' ? '📎 File' :
-                                 conversation.lastMessage.content}
+                                {conversation.lastMessage.senderId ===
+                                "current-user"
+                                  ? "You: "
+                                  : ""}
+                                {conversation.lastMessage.type === "image"
+                                  ? "📷 Image"
+                                  : conversation.lastMessage.type === "file"
+                                  ? "📎 File"
+                                  : conversation.lastMessage.content}
                               </p>
                             )}
 
                             <div className="flex items-center justify-between mt-2">
                               <div className="flex items-center space-x-1 text-xs text-gray-500">
-                                {conversation.type === 'project' && (
+                                {conversation.type === "project" && (
                                   <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
                                     Project
                                   </span>
                                 )}
-                                {conversation.type === 'group' && (
+                                {conversation.type === "group" && (
                                   <>
                                     <Users className="w-3 h-3" />
-                                    <span>{conversation.participants.length} members</span>
+                                    <span>
+                                      {conversation.participants.length} members
+                                    </span>
                                   </>
                                 )}
                               </div>
@@ -332,14 +376,24 @@ export const ChatPage: React.FC = () => {
                                     toggleConversationPin(conversation.id);
                                   }}
                                   className={`p-1 rounded hover:bg-gray-200 transition-colors ${
-                                    conversation.isPinned ? 'text-purple-600' : 'text-gray-400'
+                                    conversation.isPinned
+                                      ? "text-purple-600"
+                                      : "text-gray-400"
                                   }`}
-                                  aria-label={conversation.isPinned ? 'Unpin conversation' : 'Pin conversation'}
-                                  title={conversation.isPinned ? 'Unpin conversation' : 'Pin conversation'}
+                                  aria-label={
+                                    conversation.isPinned
+                                      ? "Unpin conversation"
+                                      : "Pin conversation"
+                                  }
+                                  title={
+                                    conversation.isPinned
+                                      ? "Unpin conversation"
+                                      : "Pin conversation"
+                                  }
                                 >
                                   <Pin className="w-3 h-3" />
                                 </button>
-                                <button 
+                                <button
                                   className="p-1 rounded hover:bg-gray-200 transition-colors text-gray-400"
                                   aria-label="More options"
                                   title="More options"
@@ -373,28 +427,57 @@ export const ChatPage: React.FC = () => {
                                   />
                                 ) : (
                                   <span className="text-white font-semibold">
-                                    {getUserDisplayName(selectedConversation.participants.find(p => p !== 'current-user') || '').charAt(0)}
+                                    {getUserDisplayName(
+                                      selectedConversation.participants.find(
+                                        (p) => p !== "current-user"
+                                      ) || ""
+                                    ).charAt(0)}
                                   </span>
                                 )}
                               </div>
-                              {isUserOnline(selectedConversation.participants.find(p => p !== 'current-user') || '') && (
+                              {isUserOnline(
+                                selectedConversation.participants.find(
+                                  (p) => p !== "current-user"
+                                ) || ""
+                              ) && (
                                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
                               )}
                             </div>
 
                             <div>
                               <h2 className="font-semibold text-gray-900">
-                                {selectedConversation.title || getUserDisplayName(selectedConversation.participants.find(p => p !== 'current-user') || '')}
+                                {selectedConversation.title ||
+                                  getUserDisplayName(
+                                    selectedConversation.participants.find(
+                                      (p) => p !== "current-user"
+                                    ) || ""
+                                  )}
                               </h2>
                               <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                {isUserOnline(selectedConversation.participants.find(p => p !== 'current-user') || '') ? (
+                                {isUserOnline(
+                                  selectedConversation.participants.find(
+                                    (p) => p !== "current-user"
+                                  ) || ""
+                                ) ? (
                                   <span className="text-green-600">Online</span>
                                 ) : (
-                                  <span>Last seen {getTimeAgo(onlineUsers.find(u => u.userId === selectedConversation.participants.find(p => p !== 'current-user'))?.lastSeen || new Date())}</span>
+                                  <span>
+                                    Last seen{" "}
+                                    {getTimeAgo(
+                                      onlineUsers.find(
+                                        (u) =>
+                                          u.userId ===
+                                          selectedConversation.participants.find(
+                                            (p) => p !== "current-user"
+                                          )
+                                      )?.lastSeen || new Date()
+                                    )}
+                                  </span>
                                 )}
                                 {typingUsers.length > 0 && (
                                   <span className="text-purple-600">
-                                    {getUserDisplayName(typingUsers[0])} is typing...
+                                    {getUserDisplayName(typingUsers[0])} is
+                                    typing...
                                   </span>
                                 )}
                               </div>
@@ -402,14 +485,14 @@ export const ChatPage: React.FC = () => {
                           </div>
 
                           <div className="flex items-center space-x-2">
-                            <button 
+                            <button
                               className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
                               aria-label="Start voice call"
                               title="Start voice call"
                             >
                               <Phone className="w-5 h-5" />
                             </button>
-                            <button 
+                            <button
                               className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
                               aria-label="Start video call"
                               title="Start video call"
@@ -417,14 +500,24 @@ export const ChatPage: React.FC = () => {
                               <Video className="w-5 h-5" />
                             </button>
                             <button
-                              onClick={() => setShowParticipants(!showParticipants)}
+                              onClick={() =>
+                                setShowParticipants(!showParticipants)
+                              }
                               className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
-                              aria-label={showParticipants ? 'Hide participants' : 'Show participants'}
-                              title={showParticipants ? 'Hide participants' : 'Show participants'}
+                              aria-label={
+                                showParticipants
+                                  ? "Hide participants"
+                                  : "Show participants"
+                              }
+                              title={
+                                showParticipants
+                                  ? "Hide participants"
+                                  : "Show participants"
+                              }
                             >
                               <Users className="w-5 h-5" />
                             </button>
-                            <button 
+                            <button
                               className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
                               aria-label="Chat settings"
                               title="Chat settings"
@@ -445,55 +538,68 @@ export const ChatPage: React.FC = () => {
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -10 }}
                               className={`flex ${
-                                message.senderId === 'current-user' ? 'justify-end' : 'justify-start'
+                                message.senderId === "current-user"
+                                  ? "justify-end"
+                                  : "justify-start"
                               }`}
                             >
                               <div
                                 className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                                  message.senderId === 'current-user'
-                                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white'
-                                    : 'bg-gray-100 text-gray-900'
+                                  message.senderId === "current-user"
+                                    ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+                                    : "bg-gray-100 text-gray-900"
                                 }`}
                               >
                                 {message.replyTo && (
                                   <div className="mb-2 p-2 bg-black/10 rounded-lg text-sm">
                                     <p className="opacity-75">Replying to:</p>
                                     <p className="truncate">
-                                      {messages.find(m => m.id === message.replyTo)?.content}
+                                      {
+                                        messages.find(
+                                          (m) => m.id === message.replyTo
+                                        )?.content
+                                      }
                                     </p>
                                   </div>
                                 )}
 
-                                {message.type === 'image' && message.attachments && (
-                                  <div className="mb-2">
-                                    {message.attachments.map(att => (
-                                      <img
-                                        key={att.id}
-                                        src={att.url}
-                                        alt={att.name}
-                                        className="rounded-lg max-w-full h-auto"
-                                      />
-                                    ))}
-                                  </div>
-                                )}
+                                {message.type === "image" &&
+                                  message.attachments && (
+                                    <div className="mb-2">
+                                      {message.attachments.map((att) => (
+                                        <img
+                                          key={att.id}
+                                          src={att.url}
+                                          alt={att.name}
+                                          className="rounded-lg max-w-full h-auto"
+                                        />
+                                      ))}
+                                    </div>
+                                  )}
 
-                                {message.type === 'file' && message.attachments && (
-                                  <div className="mb-2">
-                                    {message.attachments.map(att => (
-                                      <div key={att.id} className="flex items-center space-x-2 p-2 bg-black/10 rounded-lg">
-                                        <File className="w-4 h-4" />
-                                        <span className="text-sm">{att.name}</span>
-                                        <span className="text-xs opacity-75">
-                                          ({(att.size / 1024).toFixed(1)}KB)
-                                        </span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
+                                {message.type === "file" &&
+                                  message.attachments && (
+                                    <div className="mb-2">
+                                      {message.attachments.map((att) => (
+                                        <div
+                                          key={att.id}
+                                          className="flex items-center space-x-2 p-2 bg-black/10 rounded-lg"
+                                        >
+                                          <File className="w-4 h-4" />
+                                          <span className="text-sm">
+                                            {att.name}
+                                          </span>
+                                          <span className="text-xs opacity-75">
+                                            ({(att.size / 1024).toFixed(1)}KB)
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
 
-                                {message.type === 'voice' && (
+                                {message.type === "voice" && (
                                   <div className="flex items-center space-x-2">
-                                    <button 
+                                    <button
                                       className="p-1 rounded-full bg-black/10"
                                       aria-label="Play voice message"
                                       title="Play voice message"
@@ -508,15 +614,15 @@ export const ChatPage: React.FC = () => {
                                 )}
 
                                 <p className="text-sm">{message.content}</p>
-                                
+
                                 <div className="flex items-center justify-between mt-1">
                                   <span className="text-xs opacity-75">
-                                    {message.timestamp.toLocaleTimeString([], { 
-                                      hour: '2-digit', 
-                                      minute: '2-digit' 
+                                    {message.timestamp.toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
                                     })}
                                   </span>
-                                  {message.senderId === 'current-user' && (
+                                  {message.senderId === "current-user" && (
                                     <div className="flex items-center space-x-1">
                                       {message.isRead ? (
                                         <div className="flex space-x-0.5">
@@ -530,27 +636,37 @@ export const ChatPage: React.FC = () => {
                                   )}
                                 </div>
 
-                                {message.reactions && message.reactions.length > 0 && (
-                                  <div className="flex flex-wrap gap-1 mt-2">
-                                    {message.reactions.reduce((acc, reaction) => {
-                                      const existing = acc.find(r => r.emoji === reaction.emoji);
-                                      if (existing) {
-                                        existing.count++;
-                                      } else {
-                                        acc.push({ emoji: reaction.emoji, count: 1 });
-                                      }
-                                      return acc;
-                                    }, [] as Array<{emoji: string, count: number}>).map(reaction => (
-                                      <span
-                                        key={reaction.emoji}
-                                        className="px-2 py-1 bg-black/10 rounded-full text-xs flex items-center space-x-1"
-                                      >
-                                        <span>{reaction.emoji}</span>
-                                        {reaction.count > 1 && <span>{reaction.count}</span>}
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
+                                {message.reactions &&
+                                  message.reactions.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                      {message.reactions
+                                        .reduce((acc, reaction) => {
+                                          const existing = acc.find(
+                                            (r) => r.emoji === reaction.emoji
+                                          );
+                                          if (existing) {
+                                            existing.count++;
+                                          } else {
+                                            acc.push({
+                                              emoji: reaction.emoji,
+                                              count: 1,
+                                            });
+                                          }
+                                          return acc;
+                                        }, [] as Array<{ emoji: string; count: number }>)
+                                        .map((reaction) => (
+                                          <span
+                                            key={reaction.emoji}
+                                            className="px-2 py-1 bg-black/10 rounded-full text-xs flex items-center space-x-1"
+                                          >
+                                            <span>{reaction.emoji}</span>
+                                            {reaction.count > 1 && (
+                                              <span>{reaction.count}</span>
+                                            )}
+                                          </span>
+                                        ))}
+                                    </div>
+                                  )}
                               </div>
                             </motion.div>
                           ))}
@@ -565,8 +681,13 @@ export const ChatPage: React.FC = () => {
                             <div className="flex items-center space-x-2">
                               <div className="w-1 h-8 bg-purple-600 rounded-full" />
                               <div>
-                                <p className="text-xs text-gray-600">Replying to {getUserDisplayName(replyToMessage.senderId)}</p>
-                                <p className="text-sm truncate">{replyToMessage.content}</p>
+                                <p className="text-xs text-gray-600">
+                                  Replying to{" "}
+                                  {getUserDisplayName(replyToMessage.senderId)}
+                                </p>
+                                <p className="text-sm truncate">
+                                  {replyToMessage.content}
+                                </p>
                               </div>
                             </div>
                             <button
@@ -579,7 +700,7 @@ export const ChatPage: React.FC = () => {
                             </button>
                           </div>
                         )}
-                        
+
                         <div className="flex items-end space-x-2">
                           <div className="flex items-center space-x-1">
                             <input
@@ -598,7 +719,7 @@ export const ChatPage: React.FC = () => {
                             >
                               <Paperclip className="w-5 h-5" />
                             </button>
-                            <button 
+                            <button
                               className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
                               aria-label="Attach image"
                               title="Attach image"
@@ -610,13 +731,25 @@ export const ChatPage: React.FC = () => {
                               onMouseUp={() => setIsRecording(false)}
                               className={`p-2 rounded-lg transition-colors ${
                                 isRecording
-                                  ? 'text-red-600 bg-red-50'
-                                  : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
+                                  ? "text-red-600 bg-red-50"
+                                  : "text-gray-600 hover:text-purple-600 hover:bg-purple-50"
                               }`}
-                              aria-label={isRecording ? 'Recording voice message' : 'Record voice message'}
-                              title={isRecording ? 'Recording voice message' : 'Record voice message'}
+                              aria-label={
+                                isRecording
+                                  ? "Recording voice message"
+                                  : "Record voice message"
+                              }
+                              title={
+                                isRecording
+                                  ? "Recording voice message"
+                                  : "Record voice message"
+                              }
                             >
-                              {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                              {isRecording ? (
+                                <MicOff className="w-5 h-5" />
+                              ) : (
+                                <Mic className="w-5 h-5" />
+                              )}
                             </button>
                           </div>
 
@@ -625,13 +758,19 @@ export const ChatPage: React.FC = () => {
                               <Input
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+                                onKeyPress={(e) =>
+                                  e.key === "Enter" &&
+                                  !e.shiftKey &&
+                                  handleSendMessage()
+                                }
                                 placeholder="Type a message..."
                                 className="pr-12"
                                 aria-label="Type your message"
                               />
                               <button
-                                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                onClick={() =>
+                                  setShowEmojiPicker(!showEmojiPicker)
+                                }
                                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-600 transition-colors"
                                 aria-label="Add emoji"
                                 title="Add emoji"
@@ -642,7 +781,7 @@ export const ChatPage: React.FC = () => {
                               {showEmojiPicker && (
                                 <div className="absolute bottom-full right-0 mb-2 p-2 bg-white border border-gray-200 rounded-lg shadow-lg">
                                   <div className="flex space-x-1">
-                                    {reactionEmojis.map(emoji => (
+                                    {reactionEmojis.map((emoji) => (
                                       <button
                                         key={emoji}
                                         onClick={() => {
@@ -684,7 +823,8 @@ export const ChatPage: React.FC = () => {
                           Select a conversation
                         </h3>
                         <p className="text-gray-600">
-                          Choose a conversation from the sidebar to start messaging
+                          Choose a conversation from the sidebar to start
+                          messaging
                         </p>
                       </div>
                     </div>
@@ -696,13 +836,15 @@ export const ChatPage: React.FC = () => {
                   {showParticipants && selectedConversation && (
                     <motion.div
                       initial={{ width: 0, opacity: 0 }}
-                      animate={{ width: '300px', opacity: 1 }}
+                      animate={{ width: "300px", opacity: 1 }}
                       exit={{ width: 0, opacity: 0 }}
                       className="border-l border-gray-200 bg-gray-50 overflow-hidden"
                     >
                       <div className="p-4">
                         <div className="flex items-center justify-between mb-4">
-                          <h3 className="font-semibold text-gray-900">Participants</h3>
+                          <h3 className="font-semibold text-gray-900">
+                            Participants
+                          </h3>
                           <button
                             onClick={() => setShowParticipants(false)}
                             className="text-gray-400 hover:text-gray-600"
@@ -712,41 +854,54 @@ export const ChatPage: React.FC = () => {
                             <X className="w-5 h-5" />
                           </button>
                         </div>
-                        
+
                         <div className="space-y-3">
-                          {selectedConversation.participants.map(participantId => (
-                            <div key={participantId} className="flex items-center space-x-3">
-                              <div className="relative">
-                                <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center overflow-hidden">
-                                  {getUserAvatar(participantId) ? (
-                                    <img
-                                      src={getUserAvatar(participantId)}
-                                      alt=""
-                                      className="w-full h-full object-cover"
-                                    />
-                                  ) : (
-                                    <span className="text-white text-xs font-semibold">
-                                      {getUserDisplayName(participantId).charAt(0)}
-                                    </span>
+                          {selectedConversation.participants.map(
+                            (participantId) => (
+                              <div
+                                key={participantId}
+                                className="flex items-center space-x-3"
+                              >
+                                <div className="relative">
+                                  <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center overflow-hidden">
+                                    {getUserAvatar(participantId) ? (
+                                      <img
+                                        src={getUserAvatar(participantId)}
+                                        alt=""
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <span className="text-white text-xs font-semibold">
+                                        {getUserDisplayName(
+                                          participantId
+                                        ).charAt(0)}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {isUserOnline(participantId) && (
+                                    <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-white" />
                                   )}
                                 </div>
-                                {isUserOnline(participantId) && (
-                                  <div className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-white" />
-                                )}
+                                <div className="flex-1">
+                                  <p className="font-medium text-sm">
+                                    {getUserDisplayName(participantId)}
+                                  </p>
+                                  <p className="text-xs text-gray-600">
+                                    {isUserOnline(participantId)
+                                      ? "Online"
+                                      : "Offline"}
+                                  </p>
+                                </div>
                               </div>
-                              <div className="flex-1">
-                                <p className="font-medium text-sm">{getUserDisplayName(participantId)}</p>
-                                <p className="text-xs text-gray-600">
-                                  {isUserOnline(participantId) ? 'Online' : 'Offline'}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
+                            )
+                          )}
                         </div>
 
-                        {selectedConversation.type === 'project' && (
+                        {selectedConversation.type === "project" && (
                           <div className="mt-6 pt-6 border-t border-gray-200">
-                            <h4 className="font-semibold text-sm text-gray-900 mb-3">Project Info</h4>
+                            <h4 className="font-semibold text-sm text-gray-900 mb-3">
+                              Project Info
+                            </h4>
                             <div className="space-y-2 text-sm">
                               <div className="flex justify-between">
                                 <span className="text-gray-600">Status:</span>
@@ -754,7 +909,9 @@ export const ChatPage: React.FC = () => {
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-gray-600">Deadline:</span>
-                                <span className="font-medium">Dec 15, 2024</span>
+                                <span className="font-medium">
+                                  Dec 15, 2024
+                                </span>
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-gray-600">Budget:</span>
@@ -765,7 +922,9 @@ export const ChatPage: React.FC = () => {
                         )}
 
                         <div className="mt-6 pt-6 border-t border-gray-200">
-                          <h4 className="font-semibold text-sm text-gray-900 mb-3">Quick Actions</h4>
+                          <h4 className="font-semibold text-sm text-gray-900 mb-3">
+                            Quick Actions
+                          </h4>
                           <div className="space-y-2">
                             <button className="w-full text-left p-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                               View Project Details
