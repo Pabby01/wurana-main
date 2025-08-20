@@ -17,9 +17,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <div className="mt-16 flex h-screen bg-gradient-to-br from-purple-950 via-purple-900 to-purple-800">
-      {/* Sidebar */}
       <aside className="w-64 bg-gradient-to-b from-purple-900 to-purple-950 border-r border-purple-700/40 shadow-xl">
-        {/* User Info */}
         <div className="p-6">
           <div className="flex items-center space-x-3">
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-700 text-white font-bold">

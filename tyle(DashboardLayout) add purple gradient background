@@ -1,0 +1,27 @@
+[1mdiff --git a/src/components/dashboard/DashboardLayout.tsx b/src/components/dashboard/DashboardLayout.tsx[m
+[1mindex 9a57072..aa97a7c 100644[m
+[1m--- a/src/components/dashboard/DashboardLayout.tsx[m
+[1m+++ b/src/components/dashboard/DashboardLayout.tsx[m
+[36m@@ -17,9 +17,7 @@[m [mexport const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({[m
+ [m
+   return ([m
+     <div className="mt-16 flex h-screen bg-gradient-to-br from-purple-950 via-purple-900 to-purple-800">[m
+[31m-      {/* Sidebar */}[m
+       <aside className="w-64 bg-gradient-to-b from-purple-900 to-purple-950 border-r border-purple-700/40 shadow-xl">[m
+[31m-        {/* User Info */}[m
+         <div className="p-6">[m
+           <div className="flex items-center space-x-3">[m
+             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-700 text-white font-bold">[m
+[1mdiff --git a/src/components/layout/Header.tsx b/src/components/layout/Header.tsx[m
+[1mindex f62cf91..2797942 100644[m
+[1m--- a/src/components/layout/Header.tsx[m
+[1m+++ b/src/components/layout/Header.tsx[m
+[36m@@ -302,7 +302,7 @@[m [mexport const Header: React.FC = () => {[m
+                 initial={{ opacity: 0, y: -10 }}[m
+                 animate={{ opacity: 1, y: 0 }}[m
+                 exit={{ opacity: 0, y: -10 }}[m
+[31m-                className="md:hidden py-4 border-t border-white/20 bg-[#9945FF]" //[m
+[32m+[m[32m                className="md:hidden py-4 border-t border-white/20 bg-[#9945FF]"[m[41m [m
+               >[m
+                 <div className="space-y-4 p-4">[m
+                   <div>[m
