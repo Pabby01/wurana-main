@@ -89,14 +89,6 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                  <Route
-                    path="/chat"
-                    element={
-                      <ProtectedRoute>
-                        <ChatPage />
-                      </ProtectedRoute>
-                    }
-                  />
 
                   {/* Job System Routes */}
                   <Route
@@ -124,90 +116,35 @@ function App() {
                     }
                   />
 
-                  {/* Bid Management Routes */}
-                  <Route
-                    path="/bids"
-                    element={
-                      <ProtectedRoute>
-                        <BidManagementPage />
-                      </ProtectedRoute>
-                    }
-                  />
                   <Route
                     path="/dashboard"
                     element={
                       <ProtectedRoute>
-                        <DashboardLayout>
-                          <DashboardOverview />
-                        </DashboardLayout>
+                        <DashboardLayout />
                       </ProtectedRoute>
                     }
-                  />
-                  <Route
-                    path="/wallet"
-                    element={
-                      <ProtectedRoute>
-                        <WalletPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/settings"
-                    element={
-                      <ProtectedRoute>
-                        <SettingsPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/reviews"
-                    element={
-                      <ProtectedRoute>
-                        <ReviewsPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/profile"
-                    element={
-                      <ProtectedRoute>
-                        <ProfilePage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/gigs/create"
-                    element={
-                      <ProtectedRoute>
-                        <CreateGigPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/gigs/manage"
-                    element={
-                      <ProtectedRoute>
-                        <ManageGigsPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route path="/gigs/:id" element={<GigDetailPage />} />
-                  <Route
-                    path="/gigs/:id/orders"
-                    element={
-                      <ProtectedRoute>
-                        <GigOrdersPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/gigs/:id/analytics"
-                    element={
-                      <ProtectedRoute>
-                        <GigAnalyticsPage />
-                      </ProtectedRoute>
-                    }
-                  />
+                  >
+                    <Route index element={<DashboardOverview />} />
+                    <Route path="wallet" element={<WalletPage />} />
+                    <Route path="settings" element={<SettingsPage />} />
+                    <Route path="reviews" element={<ReviewsPage />} />
+                    <Route path="profile" element={<ProfilePage />} />
+                    <Route path="chat" element={<ChatPage />} />
+                    <Route path="bids" element={<BidManagementPage />} />
+                    <Route path="services" element={<FeaturedServices />} />
+
+                    <Route path="gigs">
+                      <Route path="create" element={<CreateGigPage />} />
+                      <Route path="manage" element={<ManageGigsPage />} />
+                      <Route path=":id" element={<GigDetailPage />} />
+                      <Route path=":id/orders" element={<GigOrdersPage />} />
+                      <Route
+                        path=":id/analytics"
+                        element={<GigAnalyticsPage />}
+                      />
+                    </Route>
+                  </Route>
+
                   <Route path="/auth" element={<AuthPage />} />
                 </Routes>
                 <Footer />

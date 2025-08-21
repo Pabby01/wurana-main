@@ -58,12 +58,12 @@ export const Header: React.FC = () => {
 
   const profileMenuItems = [
     { icon: BarChart3, label: "Dashboard", path: "/dashboard" },
-    { icon: User, label: "Profile", path: "/profile" },
-    { icon: MessageSquare, label: "Messages", path: "/chat" },
-    { icon: Star, label: "Reviews", path: "/reviews" },
-    { icon: Package, label: "Gigs", path: "/gigs/manage" },
-    { icon: FileText, label: "My Bids", path: "/bids" },
-    { icon: Settings, label: "Settings", path: "/settings" },
+    { icon: User, label: "Profile", path: "/dashboard/profile" },
+    { icon: MessageSquare, label: "Messages", path: "/dashboard/chat" },
+    { icon: Star, label: "Reviews", path: "/dashboard/reviews" },
+    { icon: Package, label: "Gigs", path: "/dashboard/gigs/manage" },
+    { icon: FileText, label: "My Bids", path: "/dashboard/bids" },
+    { icon: Settings, label: "Settings", path: "/dashboard/settings" },
   ];
 
   const headerScale = Math.max(1 - scrollPosition / 2000, 0.95);
@@ -302,7 +302,7 @@ export const Header: React.FC = () => {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="md:hidden py-4 border-t border-white/20 bg-[#9945FF]" //
+                className="md:hidden py-4 border-t border-white/20 bg-[#9945FF]"
               >
                 <div className="space-y-4 p-4">
                   <div>
