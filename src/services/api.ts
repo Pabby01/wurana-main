@@ -81,6 +81,13 @@ class ApiClient {
   }
 
   /**
+   * Clear authentication token
+   */
+  clearAuthToken(): void {
+    this.authToken = null;
+  }
+
+  /**
    * Get authentication token
    */
   getAuthToken(): string | null {

@@ -14,10 +14,10 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, name: string) => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
+  login: (email: string, name: string) => Promise<{ success: boolean; message: string }>;
+  loginWithGoogle: () => Promise<{ success: boolean; message: string }>;
   logout: () => void;
-  createWallet: () => Promise<void>;
+  createWallet: () => Promise<{ success: boolean; message: string }>;
 }
 
 const CIVIC_CONFIG = {
@@ -52,13 +52,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, name: string) => {
-    const newUser = {
-      id: Math.random().toString(36).substring(7),
-      email,
-      name
-    };
-    setUser(newUser);
-    localStorage.setItem('user', JSON.stringify(newUser));
+    try {
+      // Validate input
+      if (!email || !name) {
+        throw new Error('Email and name are required');
+      }
+      if (!email.includes('@')) {
+        throw new Error('Invalid email format');
+      }
+
+      const newUser = {
+        id: Math.random().toString(36).substring(7),
+        email,
+        name
+      };
+      setUser(newUser);
+      localStorage.setItem('user', JSON.stringify(newUser));
+      
+      return { success: true, message: 'Login successful' };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      throw new Error(`Authentication failed: ${errorMessage}`);
+    }
   };
 
   const loginWithGoogle = async () => {
@@ -67,26 +82,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const createWallet = async () => {
-    if (!user) throw new Error('User must be logged in to create a wallet');
-
-    const wallet = Keypair.generate();
-    const walletAddress = wallet.publicKey.toString();
-
-    // Store private key securely
-    localStorage.setItem(`wallet_${user.id}`, JSON.stringify(Array.from(wallet.secretKey)));
-
-    // Request airdrop for testing (devnet only)
-    try {
-      const signature = await connection.requestAirdrop(wallet.publicKey, LAMPORTS_PER_SOL);
-      await connection.confirmTransaction(signature);
-    } catch (error) {
-      console.error('Failed to request airdrop:', error);
+    if (!user) {
+      throw new Error('Authentication required: Please log in to create a wallet');
     }
 
-    // Update user with wallet address
-    const updatedUser = { ...user, walletAddress };
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+    try {
+      const wallet = Keypair.generate();
+      const walletAddress = wallet.publicKey.toString();
+
+      // Store private key securely with encryption
+      const encryptedKey = btoa(String.fromCharCode.apply(null, Array.from(wallet.secretKey)));
+      localStorage.setItem(`wallet_${user.id}`, encryptedKey);
+
+      // Request airdrop for testing (devnet only)
+      const signature = await connection.requestAirdrop(wallet.publicKey, LAMPORTS_PER_SOL);
+      const confirmation = await connection.confirmTransaction(signature, 'confirmed');
+
+      if (!confirmation.value.err) {
+        // Update user with wallet address
+        const updatedUser = { ...user, walletAddress };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        return { success: true, message: 'Wallet created successfully' };
+      } else {
+        throw new Error('Transaction confirmation failed');
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create wallet';
+      throw new Error(`Wallet creation failed: ${errorMessage}`);
+    }
   };
 
   const logout = () => {

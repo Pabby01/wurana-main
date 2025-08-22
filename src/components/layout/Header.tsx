@@ -6,7 +6,6 @@ import {
   Menu,
   X,
   LogOut,
-  Wallet,
   Settings,
   BarChart3,
   MessageSquare,
@@ -54,7 +53,6 @@ export const Header: React.FC = () => {
     else navigate("/auth");
   };
 
-  const handleWalletClick = () => navigate("/wallet");
 
   const profileMenuItems = [
     { icon: BarChart3, label: "Dashboard", path: "/dashboard" },
@@ -175,19 +173,6 @@ export const Header: React.FC = () => {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                 >
-                  <motion.button
-                    onClick={handleWalletClick}
-                    className="p-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 rounded-lg border border-green-500/30 transition-all duration-200 flex items-center space-x-2 text-white"
-                    whileHover={{
-                      scale: 1.05,
-                      boxShadow: "0 0 20px rgba(34, 197, 94, 0.3)",
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Wallet className="w-4 h-4" />
-                    <span className="text-sm font-medium">Wallet</span>
-                  </motion.button>
-
                   {/* Profile Dropdown */}
                   <div className="relative" ref={profileDropdownRef}>
                     <motion.button

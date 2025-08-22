@@ -8,7 +8,6 @@ import {
   Copy,
   Eye,
   EyeOff,
-  CreditCard,
   Banknote,
   TrendingUp,
 } from "lucide-react";
@@ -41,7 +40,7 @@ export const WalletPage: React.FC = () => {
   const [showBalances, setShowBalances] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [balance, setBalance] = useState<WalletBalance>({
+  const [balance] = useState<WalletBalance>({
     sol: 12.45,
     usdc: 150.75,
     fiat: 2456.8,
@@ -91,11 +90,24 @@ export const WalletPage: React.FC = () => {
     }
   };
 
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
+
   const handleDeposit = async () => {
     setIsLoading(true);
+    setError("");
+    setSuccess("");
+
     try {
-      // Implement deposit logic based on method
-      console.log("Depositing:", depositAmount, depositMethod);
+      // Validate input
+      if (!depositAmount || parseFloat(depositAmount) <= 0) {
+        throw new Error("Please enter a valid amount");
+      }
+
+      if (!user?.walletAddress) {
+        throw new Error("Please connect your wallet first");
+      }
+
       // Add transaction to list
       const newTransaction: Transaction = {
         id: Date.now().toString(),
@@ -105,9 +117,16 @@ export const WalletPage: React.FC = () => {
         status: "pending",
         timestamp: new Date(),
       };
+
+      // Simulate blockchain transaction delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       setTransactions((prev) => [newTransaction, ...prev]);
       setDepositAmount("");
+      setSuccess(`Successfully deposited ${depositAmount} ${depositMethod.toUpperCase()}`);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Deposit failed";
+      setError(errorMessage);
       console.error("Deposit failed:", error);
     } finally {
       setIsLoading(false);
@@ -116,15 +135,31 @@ export const WalletPage: React.FC = () => {
 
   const handleWithdraw = async () => {
     setIsLoading(true);
+    setError("");
+    setSuccess("");
+
     try {
-      // Implement withdraw logic
-      console.log(
-        "Withdrawing:",
-        withdrawAmount,
-        withdrawMethod,
-        "to",
-        withdrawAddress
-      );
+      // Validate input
+      if (!withdrawAmount || parseFloat(withdrawAmount) <= 0) {
+        throw new Error("Please enter a valid amount");
+      }
+
+      if (!withdrawAddress && withdrawMethod !== "fiat") {
+        throw new Error("Please enter a valid recipient address");
+      }
+
+      if (!user?.walletAddress) {
+        throw new Error("Please connect your wallet first");
+      }
+
+      // Check balance
+      const availableBalance = withdrawMethod === "sol" ? balance.sol :
+        withdrawMethod === "usdc" ? balance.usdc : balance.fiat;
+
+      if (parseFloat(withdrawAmount) > availableBalance) {
+        throw new Error(`Insufficient ${withdrawMethod.toUpperCase()} balance`);
+      }
+
       const newTransaction: Transaction = {
         id: Date.now().toString(),
         type: "withdraw",
@@ -133,10 +168,17 @@ export const WalletPage: React.FC = () => {
         status: "pending",
         timestamp: new Date(),
       };
+
+      // Simulate blockchain transaction delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       setTransactions((prev) => [newTransaction, ...prev]);
       setWithdrawAmount("");
       setWithdrawAddress("");
+      setSuccess(`Withdrawal of ${withdrawAmount} ${withdrawMethod.toUpperCase()} initiated`);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Withdrawal failed";
+      setError(errorMessage);
       console.error("Withdraw failed:", error);
     } finally {
       setIsLoading(false);
@@ -145,9 +187,25 @@ export const WalletPage: React.FC = () => {
 
   const handleSwap = async () => {
     setIsLoading(true);
+    setError("");
+    setSuccess("");
+
     try {
-      // Implement swap logic using Jupiter API or similar
-      console.log("Swapping:", swapAmount, swapFrom, "to", swapTo);
+      // Validate input
+      if (!swapAmount || parseFloat(swapAmount) <= 0) {
+        throw new Error("Please enter a valid amount");
+      }
+
+      if (!user?.walletAddress) {
+        throw new Error("Please connect your wallet first");
+      }
+
+      // Check balance
+      const availableBalance = swapFrom === "sol" ? balance.sol : balance.usdc;
+      if (parseFloat(swapAmount) > availableBalance) {
+        throw new Error(`Insufficient ${swapFrom.toUpperCase()} balance`);
+      }
+
       const newTransaction: Transaction = {
         id: Date.now().toString(),
         type: "swap",
@@ -156,9 +214,16 @@ export const WalletPage: React.FC = () => {
         status: "pending",
         timestamp: new Date(),
       };
+
+      // Simulate blockchain transaction delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       setTransactions((prev) => [newTransaction, ...prev]);
       setSwapAmount("");
+      setSuccess(`Successfully swapped ${swapAmount} ${swapFrom.toUpperCase()} to ${estimatedOutput} ${swapTo.toUpperCase()}`);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Swap failed";
+      setError(errorMessage);
       console.error("Swap failed:", error);
     } finally {
       setIsLoading(false);
@@ -394,6 +459,18 @@ export const WalletPage: React.FC = () => {
                 <h3 className="text-lg font-semibold text-gray-900 mb-6">
                   Deposit Funds
                 </h3>
+                
+                {error && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                    {error}
+                  </div>
+                )}
+                
+                {success && (
+                  <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg">
+                    {success}
+                  </div>
+                )}
 
                 <div className="space-y-4">
                   <div>
@@ -408,7 +485,7 @@ export const WalletPage: React.FC = () => {
                       ].map((method) => (
                         <button
                           key={method.value}
-                          onClick={() => setDepositMethod(method.value as any)}
+                          onClick={() => setDepositMethod(method.value as "sol" | "usdc" | "fiat")}
                           className={`p-3 rounded-lg border text-center transition-all ${
                             depositMethod === method.value
                               ? "border-purple-500 bg-purple-50 text-purple-700"
@@ -469,6 +546,18 @@ export const WalletPage: React.FC = () => {
                   Withdraw Funds
                 </h3>
 
+                {error && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                    {error}
+                  </div>
+                )}
+
+                {success && (
+                  <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg">
+                    {success}
+                  </div>
+                )}
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -482,7 +571,7 @@ export const WalletPage: React.FC = () => {
                       ].map((method) => (
                         <button
                           key={method.value}
-                          onClick={() => setWithdrawMethod(method.value as any)}
+                          onClick={() => setWithdrawMethod(method.value as "sol" | "usdc" | "fiat")}
                           className={`p-3 rounded-lg border text-center transition-all ${
                             withdrawMethod === method.value
                               ? "border-purple-500 bg-purple-50 text-purple-700"
@@ -556,6 +645,18 @@ export const WalletPage: React.FC = () => {
                   Swap Tokens
                 </h3>
 
+                {error && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                    {error}
+                  </div>
+                )}
+
+                {success && (
+                  <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg">
+                    {success}
+                  </div>
+                )}
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -565,7 +666,7 @@ export const WalletPage: React.FC = () => {
                       <select
                         value={swapFrom}
                         onChange={(e) => {
-                          setSwapFrom(e.target.value as any);
+                          setSwapFrom(e.target.value as "sol" | "usdc");
                           setSwapTo(e.target.value === "sol" ? "usdc" : "sol");
                         }}
                         className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"

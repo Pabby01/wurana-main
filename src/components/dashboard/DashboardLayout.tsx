@@ -3,10 +3,11 @@ import { NavLink } from "react-router-dom";
 
 import { Outlet } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { Home, Briefcase, MessageSquare, User, Settings } from "lucide-react";
+import { Home, Briefcase, MessageSquare, User, Settings, Wallet } from "lucide-react";
 
 const SIDEBAR_ITEMS = [
   { icon: Home, label: "Overview", path: "/dashboard" },
+  { icon: Wallet, label: "Wallet", path: "/dashboard/wallet" },
   { icon: Briefcase, label: "Services", path: "/dashboard/services" },
   { icon: MessageSquare, label: "Messages", path: "/dashboard/chat" },
   { icon: User, label: "Profile", path: "/dashboard/profile" },

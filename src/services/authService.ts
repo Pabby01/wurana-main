@@ -43,6 +43,12 @@ export interface RefreshTokenResponse {
   expiresAt: string;
 }
 
+export interface GatewayUserData {
+  id: string;
+  status: string;
+  metadata?: Record<string, unknown>;
+}
+
 class AuthService {
   private authToken: string | null = null;
   private refreshToken: string | null = null;
@@ -88,6 +94,42 @@ class AuthService {
   /**
    * Register new user with email and password
    */
+  private clearStoredAuth(): void {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('token_expires_at');
+    localStorage.removeItem('current_user');
+    this.authToken = null;
+    this.refreshToken = null;
+    this.currentUser = null;
+    this.tokenExpiresAt = null;
+    apiClient.clearAuthToken();
+    serviceState.setAuthenticated(null);
+  }
+
+  private async handleAuthSuccess(data: {
+    user: User;
+    token: string;
+    refreshToken: string;
+    expiresAt: string;
+  }): Promise<void> {
+    this.authToken = data.token;
+    this.refreshToken = data.refreshToken;
+    this.currentUser = data.user;
+    this.tokenExpiresAt = new Date(data.expiresAt);
+
+    localStorage.setItem('auth_token', data.token);
+    localStorage.setItem('refresh_token', data.refreshToken);
+    localStorage.setItem('token_expires_at', data.expiresAt);
+    localStorage.setItem('current_user', JSON.stringify(data.user));
+
+    apiClient.setAuthToken(data.token);
+    serviceState.setAuthenticated(data.user);
+    
+    // Set up automatic token refresh
+    this.setupTokenRefresh();
+  }
+
   async register(registerData: RegisterRequest): Promise<AuthResponse> {
     try {
       const response = await apiClient.post<{
@@ -110,11 +152,17 @@ class AuthService {
         success: false,
         message: response.message || 'Registration failed',
       };
-    } catch (error: any) {
-      console.error('Registration error:', error);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Registration error:', error);
+        return {
+          success: false,
+          message: error.message || 'Registration failed',
+        };
+      }
       return {
         success: false,
-        message: error.message || 'Registration failed',
+        message: 'An unexpected error occurred during registration',
       };
     }
   }
@@ -144,11 +192,17 @@ class AuthService {
         success: false,
         message: response.message || 'Login failed',
       };
-    } catch (error: any) {
-      console.error('Login error:', error);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Login error:', error);
+        return {
+          success: false,
+          message: error.message || 'Login failed',
+        };
+      }
       return {
         success: false,
-        message: error.message || 'Login failed',
+        message: 'An unexpected error occurred during login',
       };
     }
   }
@@ -178,11 +232,17 @@ class AuthService {
         success: false,
         message: response.message || 'Wallet connection failed',
       };
-    } catch (error: any) {
-      console.error('Wallet connection error:', error);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Wallet connection error:', error);
+        return {
+          success: false,
+          message: error.message || 'Wallet connection failed',
+        };
+      }
       return {
         success: false,
-        message: error.message || 'Wallet connection failed',
+        message: 'An unexpected error occurred during wallet connection',
       };
     }
   }
@@ -212,11 +272,17 @@ class AuthService {
         success: false,
         message: response.message || 'Google login failed',
       };
-    } catch (error: any) {
-      console.error('Google login error:', error);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Google login error:', error);
+        return {
+          success: false,
+          message: error.message || 'Google login failed',
+        };
+      }
       return {
         success: false,
-        message: error.message || 'Google login failed',
+        message: 'An unexpected error occurred during Google login',
       };
     }
   }
@@ -259,16 +325,17 @@ class AuthService {
    * Logout user
    */
   async logout(): Promise<boolean> {
+    let success = true;
     try {
       if (this.authToken) {
         await apiClient.post(API_ENDPOINTS.LOGOUT);
       }
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
-      this.clearAuth();
-      return true;
+      success = false;
     }
+    this.clearAuth();
+    return success;
   }
 
   /**
@@ -329,9 +396,24 @@ class AuthService {
   /**
    * Verify Civic Gateway token
    */
+  private storeAuthData(): void {
+    if (this.authToken) {
+      localStorage.setItem('auth_token', this.authToken);
+    }
+    if (this.refreshToken) {
+      localStorage.setItem('refresh_token', this.refreshToken);
+    }
+    if (this.tokenExpiresAt) {
+      localStorage.setItem('token_expires_at', this.tokenExpiresAt.toISOString());
+    }
+    if (this.currentUser) {
+      localStorage.setItem('current_user', JSON.stringify(this.currentUser));
+    }
+  }
+
   async verifyGatewayToken(gatewayToken: string): Promise<{
     isValid: boolean;
-    userData?: any;
+    userData?: GatewayUserData;
   }> {
     try {
       const response = await apiClient.post('/auth/verify-gateway', {
@@ -340,7 +422,7 @@ class AuthService {
 
       return {
         isValid: response.success,
-        userData: response.data,
+        userData: response.data as GatewayUserData,
       };
     } catch (error) {
       console.error('Gateway token verification error:', error);
@@ -361,10 +443,11 @@ class AuthService {
         success: response.success,
         message: response.message || 'Password reset email sent',
       };
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send password reset email';
       return {
         success: false,
-        message: error.message || 'Failed to send password reset email',
+        message: errorMessage,
       };
     }
   }
@@ -385,10 +468,11 @@ class AuthService {
         success: response.success,
         message: response.message || 'Password reset successfully',
       };
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to reset password';
       return {
         success: false,
-        message: error.message || 'Failed to reset password',
+        message: errorMessage,
       };
     }
   }
@@ -409,68 +493,19 @@ class AuthService {
         success: response.success,
         message: response.message || 'Password changed successfully',
       };
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to change password';
       return {
         success: false,
-        message: error.message || 'Failed to change password',
+        message: errorMessage,
       };
-    }
-  }
-
-  /**
-   * Handle successful authentication
-   */
-  private async handleAuthSuccess(data: {
-    user: User;
-    token: string;
-    refreshToken: string;
-    expiresAt: string;
-  }): Promise<void> {
-    this.currentUser = data.user;
-    this.authToken = data.token;
-    this.refreshToken = data.refreshToken;
-    this.tokenExpiresAt = new Date(data.expiresAt);
-
-    // Store authentication data
-    this.storeAuthData();
-
-    // Set API client token
-    apiClient.setAuthToken(this.authToken);
-
-    // Update service state
-    serviceState.setAuthenticated(this.currentUser);
-
-    // Connect to real-time service
-    try {
-      const { realtimeService } = await import('./realtimeService');
-      await realtimeService.connect(this.authToken, this.currentUser.id);
-    } catch (error) {
-      console.error('Failed to connect to real-time service:', error);
-    }
-  }
-
-  /**
-   * Store authentication data to localStorage
-   */
-  private storeAuthData(): void {
-    if (this.authToken) {
-      localStorage.setItem('auth_token', this.authToken);
-    }
-    if (this.refreshToken) {
-      localStorage.setItem('refresh_token', this.refreshToken);
-    }
-    if (this.tokenExpiresAt) {
-      localStorage.setItem('token_expires_at', this.tokenExpiresAt.toISOString());
-    }
-    if (this.currentUser) {
-      localStorage.setItem('current_user', JSON.stringify(this.currentUser));
     }
   }
 
   /**
    * Clear authentication data
    */
-  private clearAuth(): void {
+  private async clearAuth(): Promise<void> {
     this.authToken = null;
     this.refreshToken = null;
     this.currentUser = null;
@@ -482,27 +517,18 @@ class AuthService {
 
     // Disconnect from real-time service
     try {
-      const { realtimeService } = require('./realtimeService');
+      const { realtimeService } = await import('./realtimeService');
       realtimeService.disconnect();
-    } catch (error) {
+    } catch {
       // Real-time service might not be imported yet
     }
   }
 
   /**
-   * Clear stored authentication data
-   */
-  private clearStoredAuth(): void {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('token_expires_at');
-    localStorage.removeItem('current_user');
-  }
-
-  /**
    * Set up automatic token refresh
    */
-  private setupTokenRefresh(): void {
+  private setupTokenRefresh(): void { // Called in handleAuthSuccess
+
     if (!this.tokenExpiresAt) return;
 
     const refreshTime = this.tokenExpiresAt.getTime() - Date.now() - 5 * 60 * 1000; // 5 minutes before expiry
