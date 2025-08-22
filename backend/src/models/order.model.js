@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema({
   gig: { type: mongoose.Schema.Types.ObjectId, ref: 'Gig', required: true },
@@ -104,4 +104,4 @@ orderSchema.methods.updateStatus = function(status, message) {
   return this.save();
 };
 
-module.exports = mongoose.model('Order', orderSchema);
+export default mongoose.model('Order', orderSchema);

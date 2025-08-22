@@ -53,7 +53,7 @@ app.use('/api/files', fileRoutes);
 app.use('/api/wallet', walletRoutes);
 
 // Import file controller for cleanup
-import { cleanupTemporaryFiles } from './controllers/file.controller.js';
+const { cleanupTemporaryFiles } = require('./controllers/file.controller.js');
 
 // Schedule temporary file cleanup
 setInterval(cleanupTemporaryFiles, 24 * 60 * 60 * 1000); // Run daily

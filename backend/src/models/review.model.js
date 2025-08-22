@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const reviewSchema = new mongoose.Schema({
   gig: { type: mongoose.Schema.Types.ObjectId, ref: 'Gig', required: true },
@@ -75,4 +75,4 @@ reviewSchema.post('save', async function(doc) {
   }
 });
 
-module.exports = mongoose.model('Review', reviewSchema);
+export default mongoose.model('Review', reviewSchema);

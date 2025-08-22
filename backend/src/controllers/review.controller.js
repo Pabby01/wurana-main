@@ -1,9 +1,9 @@
-const Review = require('../models/review.model');
-const Order = require('../models/order.model');
-const Gig = require('../models/gig.model');
-const createError = require('http-errors');
+import Review from '../models/review.model.js';
+import Order from '../models/order.model.js';
+import Gig from '../models/gig.model.js';
+import createError from 'http-errors';
 
-exports.createReview = async (req, res, next) => {
+export const createReview = async (req, res, next) => {
   try {
     const order = await Order.findOne({
       _id: req.body.order,
@@ -30,7 +30,7 @@ exports.createReview = async (req, res, next) => {
   }
 };
 
-exports.updateReview = async (req, res, next) => {
+export const updateReview = async (req, res, next) => {
   try {
     const review = await Review.findOne({
       _id: req.params.id,
@@ -53,7 +53,7 @@ exports.updateReview = async (req, res, next) => {
   }
 };
 
-exports.deleteReview = async (req, res, next) => {
+export const deleteReview = async (req, res, next) => {
   try {
     const review = await Review.findOne({
       _id: req.params.id,
@@ -70,7 +70,7 @@ exports.deleteReview = async (req, res, next) => {
   }
 };
 
-exports.respondToReview = async (req, res, next) => {
+export const respondToReview = async (req, res, next) => {
   try {
     const review = await Review.findOne({
       _id: req.params.id,
@@ -92,7 +92,7 @@ exports.respondToReview = async (req, res, next) => {
   }
 };
 
-exports.getGigReviews = async (req, res, next) => {
+export const getGigReviews = async (req, res, next) => {
   try {
     const {
       page = 1,
@@ -127,7 +127,7 @@ exports.getGigReviews = async (req, res, next) => {
   }
 };
 
-exports.getSellerReviews = async (req, res, next) => {
+export const getSellerReviews = async (req, res, next) => {
   try {
     const reviews = await Review.find({
       seller: req.params.sellerId,
@@ -143,7 +143,7 @@ exports.getSellerReviews = async (req, res, next) => {
   }
 };
 
-exports.markReviewHelpful = async (req, res, next) => {
+export const markReviewHelpful = async (req, res, next) => {
   try {
     const review = await Review.findOne({
       _id: req.params.id,
@@ -169,7 +169,7 @@ exports.markReviewHelpful = async (req, res, next) => {
   }
 };
 
-exports.reportReview = async (req, res, next) => {
+export const reportReview = async (req, res, next) => {
   try {
     const review = await Review.findOne({
       _id: req.params.id,

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const fileSchema = new mongoose.Schema({
   originalName: { type: String, required: true },
@@ -46,4 +46,4 @@ fileSchema.index({ key: 1 });
 fileSchema.index({ uploadedBy: 1 });
 fileSchema.index({ 'relatedTo.model': 1, 'relatedTo.id': 1 });
 
-module.exports = mongoose.model('File', fileSchema);
+export default mongoose.model('File', fileSchema);

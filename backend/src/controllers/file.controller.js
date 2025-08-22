@@ -1,15 +1,16 @@
-const File = require('../models/file.model');
-const createError = require('http-errors');
-const { S3 } = require('aws-sdk');
-const { v4: uuidv4 } = require('uuid');
+import File from '../models/file.model.js';
+import createError from 'http-errors';
+import { S3Client, DeleteObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { v4 as uuidv4 } from 'uuid';
 
-const s3 = new S3({
+const s3 = new S3Client({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: process.env.AWS_REGION
 });
 
-exports.getUploadUrl = async (req, res, next) => {
+export const getUploadUrl = async (req, res, next) => {
   try {
     const { fileType, purpose, relatedModel, relatedId } = req.body;
     if (!fileType || !purpose || !relatedModel || !relatedId) {
@@ -24,7 +25,8 @@ exports.getUploadUrl = async (req, res, next) => {
       Expires: 300 // URL expires in 5 minutes
     };
 
-    const uploadUrl = await s3.getSignedUrlPromise('putObject', params);
+    const command = new PutObjectCommand(params);
+    const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
     const fileUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 
     const file = new File({
@@ -53,7 +55,7 @@ exports.getUploadUrl = async (req, res, next) => {
   }
 };
 
-exports.confirmUpload = async (req, res, next) => {
+export const confirmUpload = async (req, res, next) => {
   try {
     const file = await File.findOne({
       _id: req.params.fileId,
@@ -74,7 +76,7 @@ exports.confirmUpload = async (req, res, next) => {
   }
 };
 
-exports.deleteFile = async (req, res, next) => {
+export const deleteFile = async (req, res, next) => {
   try {
     const file = await File.findOne({
       _id: req.params.fileId,
@@ -87,7 +89,7 @@ exports.deleteFile = async (req, res, next) => {
       Key: file.key
     };
 
-    await s3.deleteObject(params).promise();
+    await s3.send(new DeleteObjectCommand(params));
     file.status = 'deleted';
     await file.save();
 
@@ -97,7 +99,7 @@ exports.deleteFile = async (req, res, next) => {
   }
 };
 
-exports.getFiles = async (req, res, next) => {
+export const getFiles = async (req, res, next) => {
   try {
     const { relatedModel, relatedId, purpose } = req.query;
     const query = { uploadedBy: req.user.id, status: { $ne: 'deleted' } };
@@ -113,7 +115,7 @@ exports.getFiles = async (req, res, next) => {
   }
 };
 
-exports.cleanupTemporaryFiles = async () => {
+export const cleanupTemporaryFiles = async () => {
   try {
     const expirationTime = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
     const expiredFiles = await File.find({

@@ -1,5 +1,5 @@
-import Wallet from '../models/wallet.model';
-import Order from '../models/order.model';
+import { Wallet } from '../models/wallet.model.js';
+import { Order } from '../models/order.model.js';
 import createError from 'http-errors';
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import { Token } from '@solana/spl-token';

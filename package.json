@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.864.0",
+    "@aws-sdk/s3-request-presigner": "^3.864.0",
     "@civic/solana-gateway-react": "^1.2.4",
     "@solana/spl-token": "^0.4.13",
     "@solana/wallet-adapter-base": "^0.9.27",

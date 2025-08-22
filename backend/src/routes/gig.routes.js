@@ -1,5 +1,5 @@
 import express from 'express';
-import { auth } from '../middleware/auth.middleware.js';
+import { verifyToken as auth } from '../middleware/auth.middleware.js';
 import { upload } from '../middleware/upload.middleware.js';
 import * as gigController from '../controllers/gig.controller.js';
 

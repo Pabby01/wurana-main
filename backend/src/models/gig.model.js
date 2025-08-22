@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const gigSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -46,4 +46,4 @@ gigSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('Gig', gigSchema);
+export default mongoose.model('Gig', gigSchema);
