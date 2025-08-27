@@ -54,11 +54,26 @@ const config = {
     },
   },
 
-  // NFT configuration
+  // NFT and Metaplex configuration
   nft: {
     mintAuthority: process.env.NFT_MINT_AUTHORITY,
     metadataProgram: process.env.NFT_METADATA_PROGRAM,
     collectionMint: process.env.NFT_COLLECTION_MINT,
+    sellerFeeBasisPoints: parseInt(process.env.NFT_SELLER_FEE_BASIS_POINTS || '0'),
+    symbol: process.env.NFT_SYMBOL || 'WRN',
+    creators: process.env.NFT_CREATORS ? JSON.parse(process.env.NFT_CREATORS) : [],
+  },
+  metaplex: {
+    bundlrAddress: process.env.BUNDLR_ADDRESS || 'https://node1.bundlr.network',
+    storageType: process.env.STORAGE_TYPE || 'bundlr',
+    uploadTimeout: parseInt(process.env.UPLOAD_TIMEOUT || '60000'),
+    maxRetries: parseInt(process.env.MAX_RETRIES || '3'),
+    defaultCollection: {
+      name: process.env.DEFAULT_COLLECTION_NAME || 'Wurana Collection',
+      symbol: process.env.DEFAULT_COLLECTION_SYMBOL || 'WRNC',
+      description: process.env.DEFAULT_COLLECTION_DESCRIPTION || 'Official Wurana NFT Collection',
+      sellerFeeBasisPoints: parseInt(process.env.DEFAULT_COLLECTION_FEE || '0'),
+    }
   },
 };
 

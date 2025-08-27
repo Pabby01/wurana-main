@@ -26,22 +26,64 @@ const nftSchema = new mongoose.Schema({
   metadata: {
     name: {
       type: String,
-      required: true
+      required: true,
+      maxlength: 32
+    },
+    symbol: {
+      type: String,
+      required: true,
+      maxlength: 10
     },
     description: {
       type: String,
-      required: true
+      required: true,
+      maxlength: 2000
     },
     image: {
       type: String,
       required: true
     },
+    animation_url: String,
+    external_url: String,
     attributes: [{
       trait_type: String,
-      value: String
+      value: String,
+      max_value: Number,
+      display_type: {
+        type: String,
+        enum: ['number', 'boost_percentage', 'boost_number', 'date']
+      }
     }],
-    external_url: String,
-    animation_url: String
+    properties: {
+      files: [{
+        uri: String,
+        type: String,
+        cdn: Boolean
+      }],
+      category: {
+        type: String,
+        enum: ['image', 'video', 'audio', 'vr', 'html']
+      },
+      creators: [{
+        address: String,
+        share: Number,
+        verified: Boolean
+      }]
+    },
+    seller_fee_basis_points: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 10000
+    },
+    uses: {
+      useMethod: {
+        type: String,
+        enum: ['burn', 'multiple', 'single']
+      },
+      remaining: Number,
+      total: Number
+    }
   },
   status: {
     type: String,
@@ -58,7 +100,17 @@ const nftSchema = new mongoose.Schema({
   collectionDetails: {
     name: String,
     symbol: String,
-    collectionMint: String
+    collectionMint: String,
+    verified: {
+      type: Boolean,
+      default: false
+    },
+    size: Number,
+    royalty: {
+      type: Number,
+      min: 0,
+      max: 100
+    }
   },
   transferHistory: [{
     from: String,

@@ -1,10 +1,11 @@
-import { Wallet } from '../models/wallet.model.js';
-import { Order } from '../models/order.model.js';
+import Wallet from '../models/wallet.model.js';
+import Order from '../models/order.model.js';
 import createError from 'http-errors';
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
-import { Token } from '@solana/spl-token';
+import * as spl from '@solana/spl-token';
 
-const connection = new Connection(process.env.SOLANA_NETWORK);
+console.log('Solana RPC URL:', process.env.SOLANA_RPC_URL);
+const connection = new Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com');
 
 export const getWallet = async (req, res, next) => {
   try {

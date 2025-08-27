@@ -1,5 +1,6 @@
-import { Connection, clusterApiUrl, Keypair } from '@solana/web3.js';
+import { Connection, clusterApiUrl, Keypair, PublicKey } from '@solana/web3.js';
 import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
+import { Metaplex, bundlrStorage, keypairIdentity } from '@metaplex-foundation/js';
 import config from './config.js';
 import { logError, logInfo } from './logger.js';
 
@@ -9,6 +10,7 @@ class SolanaService {
     this.provider = null;
     this.escrowProgram = null;
     this.treasuryKeypair = null;
+    this.metaplex = null;
   }
 
   async initialize() {
@@ -34,6 +36,15 @@ class SolanaService {
         this.treasuryKeypair,
         opts
       );
+
+      // Initialize Metaplex
+      this.metaplex = Metaplex.make(this.connection)
+        .use(keypairIdentity(this.treasuryKeypair))
+        .use(bundlrStorage({
+          address: config.solana.network === 'devnet' ? 'https://devnet.bundlr.network' : 'https://node1.bundlr.network',
+          providerUrl: endpoint,
+          timeout: 60000,
+        }));
 
       // Initialize escrow program if program ID is provided
       if (config.solana.escrowProgramId) {
@@ -73,26 +84,88 @@ class SolanaService {
     }
   }
 
+  // Transaction validation and security methods
+  async validateTransaction(transaction, signers) {
+    if (!transaction || !signers || signers.length === 0) {
+      throw new Error('Invalid transaction or signers');
+    }
+
+    // Validate all signers have valid keypairs
+    signers.forEach(signer => {
+      if (!signer.publicKey || !signer.secretKey) {
+        throw new Error('Invalid signer keypair');
+      }
+    });
+
+    // Validate transaction size
+    const serializedTx = transaction.serialize();
+    if (serializedTx.length > 1232) {
+      throw new Error('Transaction too large');
+    }
+
+    return true;
+  }
+
+  async validateTransactionFees(transaction) {
+    try {
+      const fees = await this.connection.getFeeForMessage(
+        transaction.compileMessage(),
+        'confirmed'
+      );
+
+      // Ensure fee is within acceptable range
+      if (fees.value > web3.LAMPORTS_PER_SOL * 0.1) { // Max 0.1 SOL fee
+        throw new Error('Transaction fee too high');
+      }
+
+      return fees.value;
+    } catch (error) {
+      logError('Error validating transaction fees:', error);
+      throw error;
+    }
+  }
+
   // Transaction methods
   async sendTransaction(transaction, signers) {
     try {
+      // Validate transaction and signers
+      await this.validateTransaction(transaction, signers);
+
+      // Get recent blockhash and validate fees
       transaction.recentBlockhash = await this.getRecentBlockhash();
       transaction.feePayer = signers[0].publicKey;
+      await this.validateTransactionFees(transaction);
 
       // Sign transaction
       transaction.sign(...signers);
 
-      // Send transaction
+      // Send transaction with preflight checks
       const signature = await this.connection.sendRawTransaction(
-        transaction.serialize()
+        transaction.serialize(),
+        {
+          skipPreflight: false,
+          preflightCommitment: 'confirmed',
+          maxRetries: 3,
+        }
       );
 
-      // Confirm transaction
-      const confirmation = await this.connection.confirmTransaction(signature);
+      // Confirm transaction with strict commitment
+      const confirmation = await this.connection.confirmTransaction({
+        signature,
+        blockhash: transaction.recentBlockhash,
+        lastValidBlockHeight: await this.connection.getBlockHeight(),
+      }, 'confirmed');
 
       if (confirmation.value.err) {
         throw new Error(`Transaction failed: ${confirmation.value.err}`);
       }
+
+      // Log successful transaction
+      logInfo('Transaction successful:', {
+        signature,
+        slot: confirmation.context.slot,
+        confirmationStatus: 'confirmed',
+      });
 
       return signature;
     } catch (error) {
@@ -178,11 +251,79 @@ class SolanaService {
   // NFT methods
   async mintNFT(recipient, metadata) {
     try {
-      // Implementation for minting NFTs will go here
-      // This will use the Metaplex SDK for NFT operations
-      throw new Error('NFT minting not implemented yet');
+      if (!this.metaplex) {
+        throw new Error('Metaplex not initialized');
+      }
+
+      const recipientPublicKey = new PublicKey(recipient);
+
+      // Upload metadata to Arweave
+      const { uri } = await this.metaplex.nfts().uploadMetadata({
+        name: metadata.name,
+        description: metadata.description,
+        image: metadata.image,
+        attributes: metadata.attributes,
+        external_url: metadata.external_url,
+        animation_url: metadata.animation_url
+      });
+
+      // Create NFT
+      const { nft } = await this.metaplex.nfts().create({
+        uri,
+        name: metadata.name,
+        sellerFeeBasisPoints: 0,
+        updateAuthority: this.treasuryKeypair,
+        tokenOwner: recipientPublicKey,
+        collection: metadata.collectionDetails ? new PublicKey(metadata.collectionDetails.collectionMint) : null,
+        uses: null,
+      });
+
+      return {
+        mintAddress: nft.address.toString(),
+        transactionHash: nft.response.signature,
+        metadata: {
+          ...metadata,
+          uri
+        }
+      };
     } catch (error) {
       logError('Error minting NFT:', error);
+      throw error;
+    }
+  }
+
+  async verifyNFTCollection(nftMint, collectionMint) {
+    try {
+      if (!this.metaplex) {
+        throw new Error('Metaplex not initialized');
+      }
+
+      const { response } = await this.metaplex.nfts().verifyCollection({
+        mintAddress: new PublicKey(nftMint),
+        collectionMintAddress: new PublicKey(collectionMint),
+        isSizedCollection: true,
+      });
+
+      return response.signature;
+    } catch (error) {
+      logError('Error verifying NFT collection:', error);
+      throw error;
+    }
+  }
+
+  async getNFTMetadata(mintAddress) {
+    try {
+      if (!this.metaplex) {
+        throw new Error('Metaplex not initialized');
+      }
+
+      const nft = await this.metaplex.nfts().findByMint({
+        mintAddress: new PublicKey(mintAddress),
+      });
+
+      return nft;
+    } catch (error) {
+      logError('Error fetching NFT metadata:', error);
       throw error;
     }
   }
