@@ -115,7 +115,7 @@ class ApiClient {
    */
   private async handleError(response: Response): Promise<never> {
     let errorData: unknown;
-    
+
     try {
       errorData = await response.json();
     } catch {
@@ -147,7 +147,7 @@ class ApiClient {
         throw error;
       }
 
-      await new Promise(resolve => 
+      await new Promise(resolve =>
         setTimeout(resolve, this.config.retryDelay * attempt)
       );
 
@@ -163,7 +163,7 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.config.baseURL}${endpoint}`;
-    
+
     const requestOptions: RequestInit = {
       ...options,
       headers: this.buildHeaders(options.headers as Record<string, string>),
@@ -186,14 +186,23 @@ class ApiClient {
   /**
    * GET request
    */
-  async get<T>(endpoint: string, params?: Record<string, string | number | boolean>): Promise<ApiResponse<T>> {
-    const url = params ? `${endpoint}?${new URLSearchParams(
-      Object.entries(params).reduce((acc, [key, value]) => {
-        acc[key] = String(value);
-        return acc;
-      }, {} as Record<string, string>)
-    )}` : endpoint;
-    return this.request<T>(url, { method: 'GET' });
+  async get<T>(endpoint: string, params?: Record<string, string | number | boolean | undefined | string[]>): Promise<ApiResponse<T>> {
+    let queryString = '';
+
+    if (params) {
+      const searchParams = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value === undefined) return;
+        if (Array.isArray(value)) {
+          value.forEach(v => searchParams.append(key, String(v)));
+        } else {
+          searchParams.set(key, String(value));
+        }
+      });
+      queryString = searchParams.toString();
+    }
+
+    return this.request<T>(queryString ? `${endpoint}?${queryString}` : endpoint, { method: 'GET' });
   }
 
   /**
@@ -263,7 +272,7 @@ class ApiClient {
    */
   async fetchGigs(filters?: GigFilters): Promise<ApiResponse<{ gigs: Gig[]; total: number; page: number; totalPages: number }>> {
     const params: Record<string, string | number | boolean> = {};
-    
+
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -292,36 +301,36 @@ export const API_ENDPOINTS = {
   REGISTER: '/auth/register',
   REFRESH: '/auth/refresh',
   LOGOUT: '/auth/logout',
-  
+
   // Users
   USERS: '/users',
   PROFILE: '/users/profile',
   VERIFY_KYC: '/users/kyc/verify',
-  
+
   // Gigs
   GIGS: '/gigs',
   GIG_CATEGORIES: '/gigs/categories',
-  
+
   // Bids
   BIDS: '/bids',
-  
+
   // Jobs
   JOBS: '/jobs',
-  
+
   // Wallet
   WALLET: '/wallet',
   TRANSACTIONS: '/wallet/transactions',
-  
+
   // Chat
   CONVERSATIONS: '/chat/conversations',
   MESSAGES: '/chat/messages',
-  
+
   // Reviews
   REVIEWS: '/reviews',
-  
+
   // Upload
   UPLOAD: '/upload',
-  
+
   // Real-time
   WEBSOCKET: import.meta.env.VITE_WS_URL || 'ws://localhost:3001',
 } as const;

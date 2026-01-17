@@ -30,7 +30,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   className
 }) => {
   const [newMessage, setNewMessage] = useState('');
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -77,7 +76,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </p>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -183,7 +182,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           >
             <Paperclip className="w-5 h-5" />
           </motion.button>
-          
+
           <div className="flex-1 relative">
             <input
               ref={inputRef}
@@ -195,7 +194,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
               className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
-          
+
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}

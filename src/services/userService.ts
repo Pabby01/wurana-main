@@ -3,7 +3,7 @@
  * Handles user profile management, KYC verification, and user-related operations
  */
 
-import { apiClient, API_ENDPOINTS, ApiResponse } from './api';
+import { apiClient, API_ENDPOINTS } from './api';
 import { User, UserProfile } from '../types';
 
 export interface UpdateProfileRequest {
@@ -31,6 +31,34 @@ export interface UserSearchFilters {
   availability?: boolean;
   page?: number;
   limit?: number;
+}
+
+export interface PortfolioItem {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  imageUrl: string;
+  createdAt: string;
+  [key: string]: unknown;
+}
+
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  awardedAt: string;
+  [key: string]: unknown;
+}
+
+export interface UserActivity {
+  id: string;
+  type: string;
+  description: string;
+  createdAt: string;
+  metadata?: Record<string, unknown>;
+  [key: string]: unknown;
 }
 
 class UserService {
@@ -80,7 +108,7 @@ class UserService {
     formData.append('documentType', kycData.documentType);
     formData.append('documentNumber', kycData.documentNumber);
     formData.append('selfieImage', kycData.selfieImage);
-    
+
     kycData.documentImages.forEach((file, index) => {
       formData.append(`documentImage_${index}`, file);
     });
@@ -102,7 +130,12 @@ class UserService {
     rejectionReason?: string;
   }> {
     const response = await apiClient.get(`${API_ENDPOINTS.VERIFY_KYC}/status`);
-    return response.data;
+    return response.data as {
+      status: 'pending' | 'approved' | 'rejected' | 'not_submitted';
+      submittedAt?: string;
+      reviewedAt?: string;
+      rejectionReason?: string;
+    };
   }
 
   /**
@@ -113,8 +146,12 @@ class UserService {
     total: number;
     hasMore: boolean;
   }> {
-    const response = await apiClient.get(`${API_ENDPOINTS.USERS}/search`, filters);
-    return response.data;
+    const response = await apiClient.get(`${API_ENDPOINTS.USERS}/search`, filters as unknown as Record<string, string | number | boolean | undefined | string[]>);
+    return response.data as {
+      users: User[];
+      total: number;
+      hasMore: boolean;
+    };
   }
 
   /**
@@ -129,18 +166,28 @@ class UserService {
     responseTime: number;
   }> {
     const response = await apiClient.get(`${API_ENDPOINTS.USERS}/${userId}/stats`);
-    return response.data;
+    return response.data as {
+      totalJobs: number;
+      completedJobs: number;
+      successRate: number;
+      averageRating: number;
+      totalEarnings: number;
+      responseTime: number;
+    };
   }
 
   /**
    * Get user's portfolio
    */
   async getUserPortfolio(userId: string): Promise<{
-    items: any[];
+    items: PortfolioItem[];
     total: number;
   }> {
     const response = await apiClient.get(`${API_ENDPOINTS.USERS}/${userId}/portfolio`);
-    return response.data;
+    return response.data as {
+      items: PortfolioItem[];
+      total: number;
+    };
   }
 
   /**
@@ -161,7 +208,7 @@ class UserService {
         category: portfolioData.category,
       }
     );
-    return response.data;
+    return response.data as { itemId: string };
   }
 
   /**
@@ -181,9 +228,9 @@ class UserService {
         `${API_ENDPOINTS.PROFILE}/portfolio/${itemId}`,
         updateData.image,
         {
-          title: updateData.title,
-          description: updateData.description,
-          category: updateData.category,
+          title: updateData.title || '',
+          description: updateData.description || '',
+          category: updateData.category || '',
         }
       );
     } else {
@@ -201,17 +248,17 @@ class UserService {
   /**
    * Get user's NFT badges
    */
-  async getUserBadges(userId: string): Promise<any[]> {
+  async getUserBadges(userId: string): Promise<Badge[]> {
     const response = await apiClient.get(`${API_ENDPOINTS.USERS}/${userId}/badges`);
-    return response.data;
+    return response.data as Badge[];
   }
 
   /**
    * Update user availability status
    */
   async updateAvailability(isAvailable: boolean): Promise<void> {
-    await apiClient.patch(`${API_ENDPOINTS.PROFILE}/availability`, { 
-      isAvailable 
+    await apiClient.patch(`${API_ENDPOINTS.PROFILE}/availability`, {
+      isAvailable
     });
   }
 
@@ -230,17 +277,17 @@ class UserService {
       reason,
       details,
     });
-    return response.data;
+    return response.data as { reportId: string };
   }
 
   /**
    * Get user's recent activity
    */
-  async getUserActivity(userId: string, limit: number = 10): Promise<any[]> {
+  async getUserActivity(userId: string, limit: number = 10): Promise<UserActivity[]> {
     const response = await apiClient.get(`${API_ENDPOINTS.USERS}/${userId}/activity`, {
       limit,
     });
-    return response.data;
+    return response.data as UserActivity[];
   }
 }
 

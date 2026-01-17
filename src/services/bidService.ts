@@ -4,7 +4,7 @@
  */
 
 import { apiClient, API_ENDPOINTS } from './api';
-import { Bid, JobRequest } from '../types';
+import { Bid } from '../types';
 
 export interface CreateBidRequest {
   jobId: string;
@@ -63,7 +63,7 @@ class BidService {
    */
   async createBid(bidData: CreateBidRequest): Promise<{ bidId: string }> {
     const formData = new FormData();
-    
+
     // Add text fields
     Object.entries(bidData).forEach(([key, value]) => {
       if (key !== 'attachments') {
@@ -116,8 +116,12 @@ class BidService {
     total: number;
     hasMore: boolean;
   }> {
-    const response = await apiClient.get(`${API_ENDPOINTS.BIDS}`, filters);
-    return response.data;
+    const response = await apiClient.get(`${API_ENDPOINTS.BIDS}`, filters as unknown as Record<string, string | number | boolean | undefined | string[]>);
+    return response.data as {
+      bids: BidWithDetails[];
+      total: number;
+      hasMore: boolean;
+    };
   }
 
   /**
@@ -141,7 +145,17 @@ class BidService {
     };
   }> {
     const response = await apiClient.get(`${API_ENDPOINTS.JOBS}/${jobId}/bids`, filters);
-    return response.data;
+    return response.data as {
+      bids: BidWithDetails[];
+      total: number;
+      hasMore: boolean;
+      statistics: {
+        averageAmount: number;
+        medianAmount: number;
+        totalBids: number;
+        pendingBids: number;
+      };
+    };
   }
 
   /**
@@ -164,7 +178,17 @@ class BidService {
     };
   }> {
     const response = await apiClient.get(`${API_ENDPOINTS.BIDS}/my-bids`, filters);
-    return response.data;
+    return response.data as {
+      bids: BidWithDetails[];
+      total: number;
+      hasMore: boolean;
+      statistics: {
+        totalSubmitted: number;
+        acceptanceRate: number;
+        averageAmount: number;
+        totalWon: number;
+      };
+    };
   }
 
   /**
@@ -176,7 +200,11 @@ class BidService {
     escrowAddress?: string;
   }> {
     const response = await apiClient.post(`${API_ENDPOINTS.BIDS}/${bidId}/accept`);
-    return response.data;
+    return response.data as {
+      success: boolean;
+      contractId: string;
+      escrowAddress?: string;
+    };
   }
 
   /**
@@ -207,9 +235,23 @@ class BidService {
     const endpoint = artisanId
       ? `${API_ENDPOINTS.USERS}/${artisanId}/bid-stats`
       : `${API_ENDPOINTS.BIDS}/my-stats`;
-      
+
     const response = await apiClient.get(endpoint);
-    return response.data;
+    return response.data as {
+      totalBids: number;
+      acceptedBids: number;
+      rejectedBids: number;
+      pendingBids: number;
+      acceptanceRate: number;
+      averageBidAmount: number;
+      totalWinnings: number;
+      bestPerformingCategory: string;
+      bidTrends: Array<{
+        date: string;
+        bids: number;
+        accepted: number;
+      }>;
+    };
   }
 
   /**
@@ -225,7 +267,15 @@ class BidService {
     };
   }> {
     const response = await apiClient.get(`${API_ENDPOINTS.JOBS}/${jobId}/recommended-bid`);
-    return response.data;
+    return response.data as {
+      recommendedAmount: number;
+      currency: 'SOL' | 'USDC';
+      reasoning: {
+        averageBidAmount: number;
+        competitiveRange: { min: number; max: number };
+        factorsConsidered: string[];
+      };
+    };
   }
 
   /**
@@ -246,7 +296,20 @@ class BidService {
     }>;
   }> {
     const response = await apiClient.get(`${API_ENDPOINTS.JOBS}/${jobId}/bid-competition`);
-    return response.data;
+    return response.data as {
+      totalBids: number;
+      averageAmount: number;
+      priceDistribution: Array<{
+        range: string;
+        count: number;
+      }>;
+      topArtisans: Array<{
+        id: string;
+        displayName: string;
+        rating: number;
+        bidAmount: number;
+      }>;
+    };
   }
 
   /**
@@ -277,7 +340,14 @@ class BidService {
     isRead: boolean;
   }>> {
     const response = await apiClient.get(`${API_ENDPOINTS.BIDS}/${bidId}/messages`);
-    return response.data;
+    return response.data as Array<{
+      id: string;
+      senderId: string;
+      content: string;
+      attachments: string[];
+      timestamp: string;
+      isRead: boolean;
+    }>;
   }
 
   /**
@@ -313,7 +383,13 @@ class BidService {
     category: string;
   }>> {
     const response = await apiClient.get(`${API_ENDPOINTS.BIDS}/history`, filters);
-    return response.data;
+    return response.data as Array<{
+      date: string;
+      totalBids: number;
+      acceptedBids: number;
+      averageAmount: number;
+      category: string;
+    }>;
   }
 }
 

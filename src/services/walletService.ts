@@ -4,7 +4,7 @@
  */
 
 import { apiClient, API_ENDPOINTS } from './api';
-import { Connection, PublicKey, Transaction } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 
 export interface WalletInfo {
   address: string;
@@ -92,10 +92,10 @@ class WalletService {
    * Get wallet information including balances and tokens
    */
   async getWalletInfo(walletAddress?: string): Promise<WalletInfo> {
-    const endpoint = walletAddress 
+    const endpoint = walletAddress
       ? `${API_ENDPOINTS.WALLET}/${walletAddress}`
       : API_ENDPOINTS.WALLET;
-      
+
     const response = await apiClient.get<WalletInfo>(endpoint);
     return response.data;
   }
@@ -130,7 +130,11 @@ class WalletService {
     hasMore: boolean;
   }> {
     const response = await apiClient.get(`${API_ENDPOINTS.TRANSACTIONS}`, filters);
-    return response.data;
+    return response.data as {
+      transactions: TransactionHistory[];
+      total: number;
+      hasMore: boolean;
+    };
   }
 
   /**
@@ -255,7 +259,20 @@ class WalletService {
     }>;
   }> {
     const response = await apiClient.get(`${API_ENDPOINTS.WALLET}/statistics`);
-    return response.data;
+    return response.data as {
+      totalEarnings: number;
+      totalSpent: number;
+      completedTransactions: number;
+      pendingTransactions: number;
+      activeEscrows: number;
+      totalEscrowValue: number;
+      monthlyStats: Array<{
+        month: string;
+        earnings: number;
+        spending: number;
+        transactions: number;
+      }>;
+    };
   }
 
   /**
@@ -284,7 +301,14 @@ class WalletService {
     coingeckoId?: string;
   }>> {
     const response = await apiClient.get('/tokens/supported');
-    return response.data;
+    return response.data as Array<{
+      mint: string;
+      symbol: string;
+      name: string;
+      decimals: number;
+      logoURI?: string;
+      coingeckoId?: string;
+    }>;
   }
 
   /**
@@ -297,7 +321,10 @@ class WalletService {
     const response = await apiClient.get('/tokens/prices', {
       symbols: symbols.join(','),
     });
-    return response.data;
+    return response.data as Record<string, {
+      usd: number;
+      usd24hChange: number;
+    }>;
   }
 
   /**
@@ -374,8 +401,8 @@ class WalletService {
         `${API_ENDPOINTS.TRANSACTIONS}/${signature}`
       );
       return response.data;
-    } catch (error: any) {
-      if (error.statusCode === 404) {
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'statusCode' in error && (error as { statusCode: number }).statusCode === 404) {
         return null;
       }
       throw error;
@@ -438,7 +465,17 @@ class WalletService {
     remainingPayments?: number;
   }>> {
     const response = await apiClient.get(`${API_ENDPOINTS.WALLET}/recurring-payments`);
-    return response.data;
+    return response.data as Array<{
+      id: string;
+      recipientAddress: string;
+      amount: number;
+      currency: 'SOL' | 'USDC';
+      interval: string;
+      nextPaymentDate: string;
+      status: 'active' | 'paused' | 'cancelled' | 'completed';
+      totalPaid: number;
+      remainingPayments?: number;
+    }>;
   }
 }
 
